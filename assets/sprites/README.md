@@ -1,21 +1,24 @@
-# Sprites (MVP)
+# Sprites
 
-Pixel art 16×16 gerado em código e escalado ×4 (64×64), paleta sóbria.
+## Herói — Terra (`terra/`)
 
-| Personagem | Pasta | Frames |
-|---|---|---|
-| Guerreiro / **Gildesh** | `gildesh/` | idle + walk (4) + back (2) |
-| Mira | `mira/` | idle (2) |
-| Lodo | `slime/` | idle (2) |
-| Sombra | `shade/` | idle (2) |
-| Fogueira | `campfire/` | idle (3) |
-| Retratos | `portraits/` | 1 por personagem |
+Pack usado pelo personagem jogável (Gildesh).
 
-Regenerar:
+- GIFs originais em `terra/*.gif`
+- Frames PNG em `terra/frames/` (idle/walk 3 direções, battle, cast, etc.)
 
 ```bash
-python scripts/tools/generate_sprites.py
-python scripts/tools/generate_gildesh.py
+python scripts/tools/extract_terra_frames.py
 ```
 
-Concept de referência: `assets/references/gildesh-concept.png`
+`SpriteCatalog.terra()` monta as animações no Godot.
+
+## Outros
+
+| Personagem | Pasta |
+|---|---|
+| Mira | `mira/` |
+| Lodo | `slime/` |
+| Sombra | `shade/` |
+| Fogueira | `campfire/` |
+| Gildesh gerado (legado) | `gildesh/` |
