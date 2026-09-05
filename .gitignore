@@ -4,10 +4,14 @@
 export_presets.cfg
 *.tmp
 
+# Local engine binaries (do not commit)
+Godot_v*.exe
+Godot_v*/
+*.exe.zip
+
 # OS / editors
 .DS_Store
 Thumbs.db
-*.import
 
 # Secrets / deps
 node_modules/
