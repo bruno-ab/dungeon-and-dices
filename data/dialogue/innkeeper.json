@@ -1,0 +1,65 @@
+{
+  "id": "innkeeper",
+  "portrait": "campfire",
+  "speaker": "Estalajadeira",
+  "default_start": "hub",
+  "nodes": {
+    "hub": {
+      "text": "O fogo está vivo. Descanse, ouça boatos… ou os dois.",
+      "choices": [
+        { "text": "Descansar (cura total)", "next": "heal" },
+        { "text": "Ouvir boatos da estrada", "next": "rumor" },
+        { "text": "Falar da Vila", "next": "village" },
+        { "text": "Só passar o tempo", "next": "chat" },
+        { "text": "Sair", "next": "bye" }
+      ]
+    },
+    "heal": {
+      "text": "Durma junto ao fogo. As estradas estão perigosas à noite.",
+      "effects": [
+        { "type": "heal_full" },
+        { "type": "play_me", "track": "Inn" }
+      ],
+      "next": "heal_2"
+    },
+    "heal_2": {
+      "text": "HP restaurado. Volte quando a sombra pesar.",
+      "next": "end"
+    },
+    "rumor": {
+      "text": "Dizem que um cavaleiro de cabeleira carmesim — Otto? — ainda carrega a Marreta no peito.",
+      "next": "rumor_2"
+    },
+    "rumor_2": {
+      "text": "E que no Cemitério dos Metais, sucata antiga [shake]acorda[/shake] quando cheira Arcano.",
+      "effects": [{ "type": "set_flag", "flag": "heard_inn_rumor" }],
+      "next": "hub_again"
+    },
+    "village": {
+      "text": "Cinzas no nome, pão no forno. Aqui ninguém entrega ninguém à Sentinela… em voz alta.",
+      "next": "hub_again"
+    },
+    "chat": {
+      "text": "…",
+      "next": "chat_2"
+    },
+    "chat_2": {
+      "text": "Às vezes o silêncio aquece mais que a lareira.",
+      "next": "hub_again"
+    },
+    "hub_again": {
+      "text": "Mais alguma coisa, viajante?",
+      "choices": [
+        { "text": "Descansar", "next": "heal" },
+        { "text": "Mais boatos", "next": "rumor" },
+        { "text": "A Vila", "next": "village" },
+        { "text": "Sair", "next": "bye" }
+      ]
+    },
+    "bye": {
+      "text": "Que o fogo te espere de volta.",
+      "next": "end"
+    },
+    "end": { "end": true }
+  }
+}

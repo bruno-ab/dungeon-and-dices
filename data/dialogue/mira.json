@@ -1,0 +1,104 @@
+{
+  "id": "mira",
+  "portrait": "lyra",
+  "speaker": "Mira",
+  "default_start": "hub",
+  "start_rules": [
+    { "if": { "flags_false": ["recruited_mira", "mira_refused"] }, "goto": "first_meet" },
+    { "if": { "flags_false": ["recruited_mira"], "flags_true": ["mira_refused"] }, "goto": "ask_again" }
+  ],
+  "nodes": {
+    "first_meet": {
+      "text": "Ouvi Magus falar de você. As raízes de Mylune tremem… e eu também.",
+      "next": "first_meet_2"
+    },
+    "first_meet_2": {
+      "text": "Sou Mira. Druida clandestina — meu dado é [color=#7dcea0]d6[/color]. Quer companhia?",
+      "choices": [
+        { "text": "Sim. Venha comigo.", "next": "recruit_yes" },
+        { "text": "Quero saber mais primeiro", "next": "about_self" },
+        { "text": "Ainda não", "next": "refuse" }
+      ]
+    },
+    "about_self": {
+      "text": "Curo com seiva e golpeio com geada. Magia que Vasta chamaria de crime.",
+      "next": "about_self_2"
+    },
+    "about_self_2": {
+      "text": "Se formos a Mylune, eu conheço o cheiro das serpentes. Então…?",
+      "choices": [
+        { "text": "Entre no grupo", "next": "recruit_yes" },
+        { "text": "Depois", "next": "refuse" }
+      ]
+    },
+    "recruit_yes": {
+      "text": "Mira entrou no grupo! (classe Druida)",
+      "effects": [
+        { "type": "recruit_mira" },
+        { "type": "play_me", "track": "Fanfare1" },
+        { "type": "clear_flag", "flag": "mira_refused" }
+      ],
+      "next": "recruit_yes_2"
+    },
+    "recruit_yes_2": {
+      "text": "Vamos limpar a trilha — e plantar algo melhor que cinzas.",
+      "next": "end"
+    },
+    "refuse": {
+      "text": "Tudo bem. Estarei no poço quando mudar de ideia.",
+      "effects": [{ "type": "set_flag", "flag": "mira_refused" }],
+      "next": "end"
+    },
+    "ask_again": {
+      "text": "Mudou de ideia? As sombras não esperam.",
+      "choices": [
+        { "text": "Agora sim — venha", "next": "recruit_yes" },
+        { "text": "Ainda preciso pensar", "next": "refuse_soft" }
+      ]
+    },
+    "refuse_soft": {
+      "text": "O poço continua frio. Eu também.",
+      "next": "end"
+    },
+    "hub": {
+      "text": "Já estou com você. O que quer conversar?",
+      "choices": [
+        { "text": "Dicas de druida", "next": "tips" },
+        { "text": "Sobre Mylune", "next": "mylune" },
+        { "text": "Como se sente?", "next": "feelings" },
+        { "text": "Nada, vamos", "next": "farewell" }
+      ]
+    },
+    "tips": {
+      "text": "Na árvore de skills, Folha Leve amplia a esquiva. Seiva cura melhor com itens.",
+      "next": "hub_again"
+    },
+    "mylune": {
+      "text": "A floresta engole os barulhentos. Serpentes púrpuras são mais rápidas — foque nelas primeiro.",
+      "effects": [{ "type": "set_flag", "flag": "heard_mylune_tip" }],
+      "next": "hub_again"
+    },
+    "feelings": {
+      "text": "Medo? Sempre. Mas o Arcano podado no peito dói mais quando fico quieta.",
+      "next": "feelings_2"
+    },
+    "feelings_2": {
+      "text": "Obrigada por me levar, Otto.",
+      "next": "hub_again"
+    },
+    "hub_again": {
+      "text": "Mais alguma coisa?",
+      "choices": [
+        { "text": "Dicas", "next": "tips" },
+        { "text": "Mylune", "next": "mylune" },
+        { "text": "Como se sente?", "next": "feelings" },
+        { "text": "Até logo", "next": "farewell" }
+      ]
+    },
+    "farewell": {
+      "text": "Os dados da terra respondem. Vamos.",
+      "next": "end"
+    },
+    "end": { "end": true }
+  }
+}

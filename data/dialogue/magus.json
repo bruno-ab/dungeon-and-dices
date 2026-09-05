@@ -1,0 +1,131 @@
+{
+  "id": "magus",
+  "portrait": "kelvin",
+  "speaker": "Magus",
+  "default_start": "hub",
+  "start_rules": [
+    { "if": { "all_cleared": true }, "goto": "ending" },
+    { "if": { "flag_false": "met_elder" }, "goto": "intro" }
+  ],
+  "nodes": {
+    "intro": {
+      "speaker": "Magus",
+      "portrait": "kelvin",
+      "text": "Forasteiro… bem-vindo à [color=#e8c56a]Vila de Cinzas[/color], na fronteira de Vasta.",
+      "next": "intro_2"
+    },
+    "intro_2": {
+      "text": "Sou Magus. Fui [shake]Sentinela[/shake] — hoje guardo o que resta do Arcano livre.",
+      "effects": [{ "type": "mark_met_elder" }],
+      "next": "intro_3"
+    },
+    "intro_3": {
+      "text": "Três caminhos sangram: [color=#7dcea0]Mylune[/color] a oeste, a [color=#9b8bb8]Trilha[/color] a leste, o [color=#c07070]Cemitério[/color] ao norte.",
+      "next": "intro_4"
+    },
+    "intro_4": {
+      "text": "Recrute Mira no poço. Fale comigo quando quiser — tenho mais a dizer… e talvez a oferecer.",
+      "next": "end"
+    },
+    "hub": {
+      "text": "Otto. O vento traz cheiro de ferro e musgo. O que procura?",
+      "choices": [
+        { "text": "Como está a quest?", "next": "quest_status" },
+        { "text": "Conte sobre Vasta e o Arcano", "next": "lore_vasta" },
+        { "text": "Fale da Vila de Cinzas", "next": "lore_village" },
+        { "text": "Junte-se ao meu grupo", "next": "recruit_ask", "if": { "flag_false": "recruited_magus" } },
+        { "text": "Sobre combate e dados", "next": "tips_combat" },
+        { "text": "Adeus", "next": "farewell" }
+      ]
+    },
+    "quest_status": {
+      "text": "{quest_text}",
+      "next": "hub_again"
+    },
+    "lore_vasta": {
+      "text": "Em Vasta, o Arcano é monopólio da Sentinela. Quem nasce marcado… some.",
+      "next": "lore_vasta_2"
+    },
+    "lore_vasta_2": {
+      "text": "A Rainha murmurou: [i]em cinzas os que ousam colher o que não plantaram.[/i]",
+      "next": "lore_vasta_3"
+    },
+    "lore_vasta_3": {
+      "text": "Eu colhi. Por isso vivo aqui, entre cinzas e dados.",
+      "effects": [{ "type": "set_flag", "flag": "heard_vasta_lore" }],
+      "next": "hub_again"
+    },
+    "lore_village": {
+      "text": "Esta vila abriga desertados, mercadores e magos exilados. Ninguém pergunta o nome antigo.",
+      "next": "lore_village_2"
+    },
+    "lore_village_2": {
+      "text": "Só pedimos que as sombras da trilha não voltem. E que Otto não morra cedo demais.",
+      "next": "hub_again"
+    },
+    "tips_combat": {
+      "text": "Guerreiro responde a TERRA. Druida a GELO. Mago a FOGO. O ambiente é um dado a mais.",
+      "next": "tips_combat_2"
+    },
+    "tips_combat_2": {
+      "text": "Na janela de feitiço, Contra-feitiço (U). No golpe, Guardar, Esquivar ou Contra. Timing é lei.",
+      "next": "hub_again"
+    },
+    "recruit_ask": {
+      "text": "Levarei o Arcano à batalha — longe dos olhos de Vasta. Aceita?",
+      "choices": [
+        { "text": "Sim. Venha conosco.", "next": "recruit_yes" },
+        { "text": "Ainda não.", "next": "recruit_no" }
+      ]
+    },
+    "recruit_yes": {
+      "text": "Classe Mago: Magia e Contra-feitiço. Dados d8 / janela d4.",
+      "effects": [
+        { "type": "recruit_magus" },
+        { "type": "play_me", "track": "Fanfare1" }
+      ],
+      "next": "recruit_yes_2"
+    },
+    "recruit_yes_2": {
+      "text": "Magus entrou no grupo. Use a árvore de skills (Tab) quando subir de nível.",
+      "next": "end"
+    },
+    "recruit_no": {
+      "text": "Quando a sombra apertar, eu ainda estarei aqui.",
+      "next": "end"
+    },
+    "hub_again": {
+      "text": "Mais alguma coisa?",
+      "choices": [
+        { "text": "Como está a quest?", "next": "quest_status" },
+        { "text": "Sobre Vasta", "next": "lore_vasta", "if": { "flag_false": "heard_vasta_lore" } },
+        { "text": "Ouvir de novo sobre Vasta", "next": "lore_vasta", "if": { "flag_true": "heard_vasta_lore" } },
+        { "text": "A Vila", "next": "lore_village" },
+        { "text": "Junte-se ao grupo", "next": "recruit_ask", "if": { "flag_false": "recruited_magus" } },
+        { "text": "Dicas de combate", "next": "tips_combat" },
+        { "text": "Adeus", "next": "farewell" }
+      ]
+    },
+    "farewell": {
+      "text": "Que seus dados caiam justos, Otto.",
+      "next": "end"
+    },
+    "ending": {
+      "text": "Mylune, a Trilha e o Cemitério… três feridas fechadas.",
+      "next": "ending_2"
+    },
+    "ending_2": {
+      "text": "A Rainha disse: em cinzas os que colhem o que não plantaram. Vocês plantaram esperança.",
+      "next": "ending_3"
+    },
+    "ending_3": {
+      "text": "Isso conclui esta fase da jornada.",
+      "next": "ending_go"
+    },
+    "ending_go": {
+      "effects": [{ "type": "go_phase_complete" }],
+      "end": true
+    },
+    "end": { "end": true }
+  }
+}

@@ -28,6 +28,10 @@ var pending_encounter: String = "trilha"
 
 ## skill_id -> true
 var unlocked_skills: Dictionary = {}
+## Flags de diálogo VN (lore, recusas, etc.)
+var dialogue_flags: Dictionary = {}
+## Contagem de conversas por npc_id
+var npc_talks: Dictionary = {}
 
 ## Progresso
 var phase: int = 1
@@ -56,6 +60,8 @@ func reset_run() -> void:
 	dodge_window_bonus = 0.0
 	spell_window_bonus = 0.0
 	unlocked_skills.clear()
+	dialogue_flags.clear()
+	npc_talks.clear()
 	recruited_mira = false
 	recruited_magus = false
 	battles_won = 0
@@ -269,6 +275,33 @@ func _legacy_fail() -> bool:
 	return false
 
 
+func has_dialogue_flag(flag: String) -> bool:
+	## Espelha flags de gameplay relevantes
+	match flag:
+		"met_elder":
+			return met_elder
+		"recruited_mira":
+			return recruited_mira
+		"recruited_magus":
+			return recruited_magus
+		_:
+			return bool(dialogue_flags.get(flag, false))
+
+
+func set_dialogue_flag(flag: String, value: bool = true) -> void:
+	if flag == "":
+		return
+	dialogue_flags[flag] = value
+
+
+func npc_talk_count(npc_id: String) -> int:
+	return int(npc_talks.get(npc_id, 0))
+
+
+func inc_npc_talk(npc_id: String) -> void:
+	npc_talks[npc_id] = npc_talk_count(npc_id) + 1
+
+
 func party_summary() -> String:
 	var party := "%s (Guerreiro)" % player_name
 	if recruited_mira:
@@ -301,6 +334,7 @@ func quest_text() -> String:
 
 func mark_met_elder() -> void:
 	met_elder = true
+	dialogue_flags["met_elder"] = true
 	quest_updated.emit(quest_text())
 
 

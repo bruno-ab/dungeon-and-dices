@@ -1,0 +1,50 @@
+{
+  "id": "aldeao",
+  "portrait": "terra",
+  "speaker": "Aldeão",
+  "default_start": "hub",
+  "start_rules": [
+    { "if": { "talk_count_lt": 1 }, "goto": "first" }
+  ],
+  "nodes": {
+    "first": {
+      "text": "Você não é daqui. Bom… quase ninguém é, de verdade.",
+      "next": "hub"
+    },
+    "hub": {
+      "text": "Precisa de algo?",
+      "choices": [
+        { "text": "Onde fica a trilha?", "next": "directions" },
+        { "text": "Conhece Magus?", "next": "about_magus" },
+        { "text": "Alguma novidade?", "next": "news" },
+        { "text": "Tchau", "next": "bye" }
+      ]
+    },
+    "directions": {
+      "text": "Leste: Trilha Sombria. Oeste: Mylune. Norte: Cemitério. Praça: Magus.",
+      "next": "hub_again"
+    },
+    "about_magus": {
+      "text": "Ele fala pouco e vê demais. Dizem que já usou máscara de Sentinela.",
+      "next": "hub_again"
+    },
+    "news": {
+      "text": "{quest_text}",
+      "next": "hub_again"
+    },
+    "hub_again": {
+      "text": "É só isso?",
+      "choices": [
+        { "text": "Direções", "next": "directions" },
+        { "text": "Magus", "next": "about_magus" },
+        { "text": "Novidades", "next": "news" },
+        { "text": "Adeus", "next": "bye" }
+      ]
+    },
+    "bye": {
+      "text": "Não morra longe do fogo.",
+      "next": "end"
+    },
+    "end": { "end": true }
+  }
+}

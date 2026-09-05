@@ -51,3 +51,7 @@ Ver `docs/AUDIO.md`. BGM muda por cena; combate tem SFX de ataque, magia e reaç
 ## Skills
 
 Ver `docs/SKILL-TREE.md`. Gaste SP na árvore (não mais nas teclas 1/2).
+
+## Diálogo (Visual Novel)
+
+Ver `docs/DIALOGUE-VN.md`. Fale várias vezes com Magus, Mira, Estalajadeira e o Aldeão — há escolhas e ramos.

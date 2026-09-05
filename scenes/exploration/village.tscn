@@ -180,7 +180,8 @@ collision_layer = 4
 collision_mask = 2
 script = ExtResource("4_npc")
 prompt_text = "E — Falar com Magus"
-mode = "elder"
+mode = "vn"
+dialogue_id = "magus"
 speaker_name = "Magus"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Magus"]
@@ -198,9 +199,9 @@ collision_layer = 4
 collision_mask = 2
 script = ExtResource("4_npc")
 prompt_text = "E — Descansar na estalagem"
-mode = "heal"
+mode = "vn"
+dialogue_id = "innkeeper"
 speaker_name = "Estalajadeira"
-dialogue_lines = PackedStringArray("Descanse junto ao fogo.", "As estradas estão perigosas à noite.")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Innkeeper"]
 scale = Vector2(1.6, 1.6)
@@ -216,7 +217,8 @@ collision_layer = 4
 collision_mask = 2
 script = ExtResource("4_npc")
 prompt_text = "E — Falar com Mira"
-mode = "recruit"
+mode = "vn"
+dialogue_id = "mira"
 speaker_name = "Mira"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Mira"]
@@ -225,6 +227,23 @@ script = ExtResource("5_sprite")
 catalog_id = "mira"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Mira"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="Aldeao" type="Area2D" parent="World/NPCs"]
+position = Vector2(640, 620)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Falar com o Aldeão"
+mode = "vn"
+dialogue_id = "aldeao"
+speaker_name = "Aldeão"
+
+[node name="Sprite" type="Polygon2D" parent="World/NPCs/Aldeao"]
+color = Color(0.55, 0.5, 0.4, 1)
+polygon = PackedVector2Array(-12, -16, 12, -16, 12, 16, -12, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Aldeao"]
 shape = SubResource("RectangleShape2D_npc")
 
 [node name="TrailGate" type="Area2D" parent="World/NPCs"]

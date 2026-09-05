@@ -22,6 +22,7 @@ config/icon="res://icon.svg"
 GameState="*res://autoload/game_state.gd"
 SceneRouter="*res://autoload/scene_router.gd"
 AudioManager="*res://autoload/audio_manager.gd"
+DialogueManager="*res://autoload/dialogue_manager.gd"
 SkillTreeUI="*res://scenes/ui/skill_tree.tscn"
 
 [display]
