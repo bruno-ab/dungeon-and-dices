@@ -1,52 +1,44 @@
-# Como testar o MVP (Godot 4.7.2)
+# Como jogar a Fase 1 (Godot 4.7.2)
 
-## Abrir o projeto
+## Abrir
 
-1. Instale **Godot 4.7.2** (Standard ou .NET — este MVP é GDScript puro).
-2. Em Godot: **Import** → selecione a pasta `F:\projetos\dungeon-and-dices` (arquivo `project.godot`).
-3. Pressione **F5** (Play). A cena principal é `scenes/main.tscn`.
+1. Godot **4.7.2** → Import → pasta do projeto
+2. **F5** (cena `scenes/main.tscn`)
 
-## Loop de gameplay do MVP
+## Fluxo
 
 ```
-Menu → Hub (explorar) → Recrutar / Curar / Combate → Batalha → Hub de novo
+Menu (Start Game)
+   → Vila de Cinzas
+      → Ancião (missão)
+      → Estalagem (cura)
+      → Mira (recruta, opcional)
+      → Trilha Sombria (combate reativo)
+   → Volta à vila
+   → Ancião (encerra Fase 1)
 ```
 
-### Hub
+## Controles
 
-| Zona | Cor | Ação (E) |
-|---|---|---|
-| Fogueira | laranja | Cura HP total |
-| Mira | roxo | Recruta aliada (entra na próxima batalha) |
-| Trilha Sombria | vermelho | Inicia combate |
+| Onde | Teclas |
+|---|---|
+| Menu | Enter / clique em **Start Game** |
+| Vila | **WASD** andar · **E** falar |
+| Combate | botões de ação · **Espaço/J/K** reagir |
+| Skills | **1** Parry maior · **2** +1 dado |
+| Pause | **Esc** |
 
-**Controles hub:** WASD mover · E interagir · Esc abre dica de skills · **1** amplia Parry · **2** +1 dado
+## Objetivo da Fase 1
 
-### Combate
+1. Falar com o **Ancião** na praça  
+2. (Opcional) Recrutar **Mira** no poço  
+3. Entrar na **Trilha Sombria** e vencer o combate  
+4. Voltar e falar com o Ancião → tela de conclusão  
 
-1. Turno do herói (e Mira, se recrutada): botões **Atacar** / **Preparar** / **Fugir**.
-2. Ataque rola o **Dice Engine** (`Nd10` do Guerreiro) e aplica dano.
-3. No turno inimigo aparece a **barra de reação**:
-   - pressione **Espaço / J / K**
-   - **cedo** ≈ Parry / Perfect Parry (contra-ataque)
-   - **mais tarde** ≈ Dodge (0 dano)
-   - fora da janela = MISS (dano cheio)
-4. Vitória: +15 XP (sobe de nível a cada 20 XP, ganha skill point).
-5. Volte ao hub e continue o loop.
+## Sistemas ativos
 
-## O que este MVP valida
-
-- Exploração top-down + triggers
-- Turnos com fila por Speed
-- Dados por classe / pool (`GameState.dice_count`)
-- Dodge / Parry / Perfect Parry
-- Recrutamento dinâmico (Mira)
-- Progressão curta (XP → SP → melhorar Parry ou dados)
-
-## Ainda não incluso (pós-MVP)
-
-- Pixel art / animação / shaders cinematográficos
-- Counterspell
-- Skill tree visual completa
-- Mapa com rotas que bloqueiam recrutamento
-- Save em disco (progresso só na sessão)
+- Exploração top-down (`CharacterBody2D` + colisão com prédios)
+- Diálogos (UI pausa a árvore)
+- Dice Engine + turnos + Dodge/Parry/Perfect
+- Progressão XP / skill points
+- Recrutamento dinâmico

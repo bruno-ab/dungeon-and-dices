@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bmainmenu001"]
+[gd_scene load_steps=2 format=3 uid="uid://bmainmenu002"]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 
@@ -18,51 +18,82 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.07, 0.08, 0.11, 1)
+color = Color(0.05, 0.06, 0.09, 1)
 
-[node name="Center" type="VBoxContainer" parent="."]
+[node name="Vignette" type="ColorRect" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -140.0
-offset_right = 260.0
-offset_bottom = 140.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 16
+mouse_filter = 2
+color = Color(0.08, 0.05, 0.1, 0.35)
 
-[node name="Title" type="Label" parent="Center"]
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(480, 360)
 layout_mode = 2
-theme_override_font_sizes/font_size = 42
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
 text = "Dungeon and Dices"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center"]
+[node name="Subtitle" type="Label" parent="Center/Panel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.72, 0.65, 1)
-text = "MVP — exploração, dados e combate reativo
-Godot 4.7.2"
+theme_override_colors/font_color = Color(0.78, 0.72, 0.62, 1)
+text = "Fase 1 — Vila de Cinzas
+RPG de turnos reativos · Dice Engine"
 horizontal_alignment = 1
 
-[node name="StartBtn" type="Button" parent="Center"]
+[node name="Spacer" type="Control" parent="Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
-text = "Nova run (hub)"
 
-[node name="ContinueBtn" type="Button" parent="Center"]
+[node name="StartBtn" type="Button" parent="Center/Panel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-text = "Continuar hub (mantém progresso da sessão)"
+text = "Start Game"
 
-[node name="Hint" type="Label" parent="Center"]
+[node name="ContinueBtn" type="Button" parent="Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+text = "Continuar (mesma sessão)"
+
+[node name="QuitBtn" type="Button" parent="Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Sair"
+
+[node name="Hint" type="Label" parent="Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.55, 0.55, 0.6, 1)
-text = "Controles: WASD · E interagir · Espaço/J/K reagir no combate · 1/2 gastar skill points"
+text = "WASD · E interagir · Espaço/J/K reagir no combate"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[connection signal="pressed" from="Center/StartBtn" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="Center/ContinueBtn" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="Center/Panel/Margin/VBox/StartBtn" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="Center/Panel/Margin/VBox/ContinueBtn" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="Center/Panel/Margin/VBox/QuitBtn" to="." method="_on_quit_pressed"]

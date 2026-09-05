@@ -1,0 +1,297 @@
+[gd_scene load_steps=10 format=3 uid="uid://bvillage001"]
+
+[ext_resource type="Script" path="res://scripts/exploration/village_controller.gd" id="1_village"]
+[ext_resource type="Script" path="res://scripts/exploration/player_controller.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/exploration/building_block.gd" id="3_building"]
+[ext_resource type="Script" path="res://scripts/exploration/npc_interact.gd" id="4_npc"]
+[ext_resource type="Script" path="res://scripts/sprites/catalog_sprite.gd" id="5_sprite"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="6_dlg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_npc"]
+size = Vector2(72, 72)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(1800, 40)
+
+[node name="Village" type="Node2D"]
+script = ExtResource("1_village")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Ground" type="ColorRect" parent="World"]
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 1700.0
+offset_bottom = 1200.0
+color = Color(0.11, 0.14, 0.12, 1)
+
+[node name="Plaza" type="ColorRect" parent="World"]
+offset_left = 520.0
+offset_top = 380.0
+offset_right = 980.0
+offset_bottom = 700.0
+color = Color(0.17, 0.18, 0.2, 1)
+
+[node name="RoadEast" type="ColorRect" parent="World"]
+offset_left = 960.0
+offset_top = 480.0
+offset_right = 1580.0
+offset_bottom = 580.0
+color = Color(0.16, 0.17, 0.19, 1)
+
+[node name="RoadNorth" type="ColorRect" parent="World"]
+offset_left = 680.0
+offset_top = 120.0
+offset_right = 820.0
+offset_bottom = 420.0
+color = Color(0.16, 0.17, 0.19, 1)
+
+[node name="Title" type="Label" parent="World"]
+offset_left = 560.0
+offset_top = 40.0
+offset_right = 980.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 28
+text = "Vila de Cinzas — Fase 1"
+horizontal_alignment = 1
+
+[node name="Buildings" type="Node2D" parent="World"]
+
+[node name="Inn" type="StaticBody2D" parent="World/Buildings"]
+position = Vector2(750, 180)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("3_building")
+building_size = Vector2(200, 110)
+building_color = Color(0.28, 0.24, 0.3, 1)
+roof_color = Color(0.45, 0.28, 0.22, 1)
+label_text = "Estalagem"
+
+[node name="ElderHouse" type="StaticBody2D" parent="World/Buildings"]
+position = Vector2(360, 520)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("3_building")
+building_size = Vector2(170, 130)
+building_color = Color(0.24, 0.26, 0.3, 1)
+roof_color = Color(0.32, 0.34, 0.4, 1)
+label_text = "Casa do Ancião"
+
+[node name="WellHouse" type="StaticBody2D" parent="World/Buildings"]
+position = Vector2(1120, 720)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("3_building")
+building_size = Vector2(140, 100)
+building_color = Color(0.26, 0.22, 0.32, 1)
+roof_color = Color(0.4, 0.25, 0.45, 1)
+label_text = "Poço / Mira"
+
+[node name="Barn" type="StaticBody2D" parent="World/Buildings"]
+position = Vector2(280, 240)
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("3_building")
+building_size = Vector2(150, 100)
+building_color = Color(0.22, 0.25, 0.22, 1)
+roof_color = Color(0.3, 0.28, 0.2, 1)
+label_text = "Celeiro"
+
+[node name="Walls" type="Node2D" parent="World"]
+
+[node name="WallNorth" type="StaticBody2D" parent="World/Walls"]
+position = Vector2(800, -20)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Walls/WallNorth"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallSouth" type="StaticBody2D" parent="World/Walls"]
+position = Vector2(800, 1100)
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Walls/WallSouth"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallWest" type="StaticBody2D" parent="World/Walls"]
+position = Vector2(-40, 540)
+rotation = 1.5708
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Walls/WallWest"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallEast" type="StaticBody2D" parent="World/Walls"]
+position = Vector2(1640, 540)
+rotation = 1.5708
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Walls/WallEast"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="Spawns" type="Node2D" parent="World"]
+
+[node name="SpawnPlaza" type="Marker2D" parent="World/Spawns"]
+position = Vector2(740, 560)
+
+[node name="SpawnGate" type="Marker2D" parent="World/Spawns"]
+position = Vector2(1400, 530)
+
+[node name="SpawnInn" type="Marker2D" parent="World/Spawns"]
+position = Vector2(750, 280)
+
+[node name="Player" type="CharacterBody2D" parent="World" groups=["player"]]
+unique_name_in_owner = true
+position = Vector2(740, 560)
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("2_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="World/Player"]
+scale = Vector2(1.5, 1.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="Prompt" type="Label" parent="World/Player"]
+offset_left = -90.0
+offset_top = -58.0
+offset_right = 110.0
+offset_bottom = -34.0
+theme_override_font_sizes/font_size = 14
+text = "E — interagir"
+horizontal_alignment = 1
+
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+position_smoothing_enabled = true
+limit_left = 0
+limit_top = 0
+limit_right = 1600
+limit_bottom = 1080
+
+[node name="NPCs" type="Node2D" parent="World"]
+
+[node name="Elder" type="Area2D" parent="World/NPCs"]
+position = Vector2(520, 560)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Falar com o Ancião"
+mode = "elder"
+speaker_name = "Ancião"
+
+[node name="Sprite" type="Polygon2D" parent="World/NPCs/Elder"]
+color = Color(0.75, 0.7, 0.55, 1)
+polygon = PackedVector2Array(-12, -18, 12, -18, 12, 18, -12, 18)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Elder"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="Innkeeper" type="Area2D" parent="World/NPCs"]
+position = Vector2(750, 270)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Descansar na estalagem"
+mode = "heal"
+speaker_name = "Estalajadeira"
+dialogue_lines = PackedStringArray("Descanse junto ao fogo.", "As estradas estão perigosas à noite.")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Innkeeper"]
+scale = Vector2(1.6, 1.6)
+script = ExtResource("5_sprite")
+catalog_id = "campfire"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Innkeeper"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="Mira" type="Area2D" parent="World/NPCs"]
+position = Vector2(1120, 640)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Falar com Mira"
+mode = "recruit"
+speaker_name = "Mira"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Mira"]
+scale = Vector2(1.7, 1.7)
+script = ExtResource("5_sprite")
+catalog_id = "mira"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Mira"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="TrailGate" type="Area2D" parent="World/NPCs"]
+position = Vector2(1500, 530)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Entrar na Trilha Sombria"
+mode = "battle"
+speaker_name = "Trilha"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/TrailGate"]
+scale = Vector2(1.8, 1.8)
+script = ExtResource("5_sprite")
+catalog_id = "slime"
+
+[node name="ShadeHint" type="AnimatedSprite2D" parent="World/NPCs/TrailGate"]
+position = Vector2(40, -10)
+scale = Vector2(1.4, 1.4)
+script = ExtResource("5_sprite")
+catalog_id = "shade"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/TrailGate"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="SignTrail" type="Label" parent="World"]
+offset_left = 1380.0
+offset_top = 430.0
+offset_right = 1580.0
+offset_bottom = 470.0
+theme_override_font_sizes/font_size = 18
+text = "→ Trilha Sombria"
+horizontal_alignment = 1
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Label" parent="CanvasLayer"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 10.0
+offset_right = 920.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 15
+text = "HUD"
+
+[node name="Quest" type="Label" parent="CanvasLayer"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 96.0
+offset_right = 700.0
+offset_bottom = 130.0
+theme_override_colors/font_color = Color(0.9, 0.8, 0.45, 1)
+theme_override_font_sizes/font_size = 16
+text = "Objetivo"
+
+[node name="Toast" type="Label" parent="CanvasLayer"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -70.0
+offset_right = 300.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+
+[node name="DialogueBox" parent="." instance=ExtResource("6_dlg")]
