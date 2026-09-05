@@ -12,6 +12,7 @@ func _ready() -> void:
 	GameState.party_changed.connect(_refresh_hud)
 	GameState.xp_gained.connect(func(_a, _l): _refresh_hud())
 	GameState.skill_points_changed.connect(func(_p): _refresh_hud())
+	GameState.skills_changed.connect(_refresh_hud)
 	GameState.quest_updated.connect(_on_quest)
 	_place_player()
 	_refresh_hud()
@@ -39,6 +40,8 @@ func _handle_return_from_battle() -> void:
 		"victory":
 			AudioManager.play_ui("Bell1")
 			_on_log("Você retorna à Vila de Cinzas. %s" % GameState.quest_text())
+			if GameState.skill_points > 0:
+				_on_log("Skill points disponíveis — pressione Tab.")
 		"defeat":
 			GameState.heal_full()
 			_on_log("Você acordou na estalagem… HP cheio.")
@@ -52,7 +55,7 @@ func _handle_return_from_battle() -> void:
 
 func _refresh_hud() -> void:
 	hud.text = (
-		"%s  |  Nv %d  HP %d/%d  |  %dd%d  |  SP %d  |  Vitórias %d\nParty: %s\nWASD mover · E falar/interagir · 1/2 skill points · Esc menu"
+		"%s  |  Nv %d  HP %d/%d  |  %dd%d  |  SP %d  |  Vitórias %d\nParty: %s\nWASD mover · E falar · Tab árvore de skills · Esc pause"
 		% [
 			GameState.player_name,
 			GameState.player_level,
@@ -80,10 +83,17 @@ func _on_log(text: String) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("skill_tree"):
+		SkillTreeUI.open_tree()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("ui_cancel"):
 		var dialog := AcceptDialog.new()
 		dialog.title = "Pause"
-		dialog.dialog_text = "1 = ampliar Parry · 2 = +1 dado\nSkill points: %d\n\nOK fecha. Esc no menu principal via botão." % GameState.skill_points
+		dialog.dialog_text = (
+			"Skill points: %d\nTab = Árvore de Skills\n\nOK fecha."
+			% GameState.skill_points
+		)
 		dialog.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(dialog)
 		get_tree().paused = true
@@ -96,20 +106,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_tree().paused = false
 			dialog.queue_free()
 		)
-		var quit_btn := dialog.add_button("Menu principal", true, "quit")
+		dialog.add_button("Árvore de Skills", true, "skills")
+		dialog.add_button("Menu principal", true, "quit")
 		dialog.custom_action.connect(func(action: StringName):
-			if action == &"quit":
+			if action == &"skills":
+				get_tree().paused = false
+				dialog.queue_free()
+				SkillTreeUI.open_tree()
+			elif action == &"quit":
 				get_tree().paused = false
 				SceneRouter.go_main()
 		)
-		quit_btn.visible = true
-
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.physical_keycode == KEY_1:
-			GameState.spend_skill_widen_parry()
-			_refresh_hud()
-		elif event.physical_keycode == KEY_2:
-			GameState.spend_skill_extra_die()
-			_refresh_hud()

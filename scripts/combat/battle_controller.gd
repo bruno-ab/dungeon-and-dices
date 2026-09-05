@@ -84,6 +84,7 @@ func _make_otto() -> Combatant:
 	c.items = ["pocao"]
 	c.flat_bonus = 2 + GameState.player_level / 2
 	c.configure_class(&"warrior")
+	GameState.apply_combatant_skills(c)
 	return c
 
 
@@ -93,6 +94,7 @@ func _make_mira() -> Combatant:
 	c.level = GameState.player_level
 	c.configure_class(&"druid")
 	c.items = ["pocao", "semente"]
+	GameState.apply_combatant_skills(c)
 	return c
 
 
@@ -102,6 +104,7 @@ func _make_magus() -> Combatant:
 	c.level = GameState.player_level
 	c.configure_class(&"mage")
 	c.items = ["pocao"]
+	GameState.apply_combatant_skills(c)
 	return c
 
 
@@ -279,9 +282,14 @@ func player_guard() -> void:
 	busy = true
 	AudioManager.sfx_guard()
 	current.guarding = true
-	current.heal(2)
+	current.guard_mitigation = clampf(0.5 - GameState.guard_extra_mitigation(current.class_id), 0.25, 0.5)
+	var heal_amt := 2 + GameState.guard_heal_bonus(current.class_id)
+	current.heal(heal_amt)
 	var roll := DiceEngine.roll(1, 6, rng)
-	battle_log.emit("%s GUARDA (janela d6 → %s). Próximo dano −50%%." % [current.display_name, roll["label"]])
+	battle_log.emit(
+		"%s GUARDA (janela d6 → %s). Próximo dano reduzido. +%d HP."
+		% [current.display_name, roll["label"], heal_amt]
+	)
 	ui_refresh.emit()
 	busy = false
 	notify_player_action_finished()
@@ -290,26 +298,33 @@ func player_guard() -> void:
 func player_cast_magic() -> void:
 	if phase != Phase.PLAYER_TURN or busy or current == null:
 		return
-	if not current.spend_mp(4):
+	var cost := GameState.magic_cost_for(current.class_id, 4)
+	if current.class_id == &"warrior" and GameState.warrior_magic_free():
+		cost = 0
+	if not current.spend_mp(cost):
 		AudioManager.sfx_miss()
-		battle_log.emit("%s sem MP suficiente." % current.display_name)
+		battle_log.emit("%s sem MP suficiente (custo %d)." % [current.display_name, cost])
 		return
 	var target := _find(selected_target_id)
 	if target == null or not target.is_alive():
 		_pick_default_target()
 		target = _find(selected_target_id)
 	if target == null:
-		current.restore_mp(4)
+		current.restore_mp(cost)
 		return
 	busy = true
 	AudioManager.sfx_magic()
 	var sides := 8 if current.class_id == &"mage" else 6
+	if current.class_id == &"warrior":
+		sides = 10
 	var roll := DiceEngine.roll_damage(1, sides, current.flat_bonus + 2, rng)
 	var dmg: int = int(roll["total"]) + _env_bonus_for(current)
+	if current.class_id == &"warrior" and GameState.warrior_magic_free():
+		dmg += 5
 	target.take_damage(dmg)
 	AudioManager.sfx_damage()
 	last_roll_label = str(roll["label"])
-	battle_log.emit("%s conjura MAGIA — %s (dano %d)." % [current.display_name, roll["label"], dmg])
+	battle_log.emit("%s conjura MAGIA — %s (dano %d, MP −%d)." % [current.display_name, roll["label"], dmg, cost])
 	ui_refresh.emit()
 	busy = false
 	notify_player_action_finished()
@@ -326,18 +341,19 @@ func player_use_item(item_id: String = "pocao") -> void:
 	busy = true
 	AudioManager.sfx_item()
 	current.items.erase(item_id)
+	var heal_extra := GameState.heal_item_bonus(current.class_id)
 	match item_id:
 		"pocao":
-			current.heal(12)
+			current.heal(12 + heal_extra)
 			AudioManager.sfx_heal()
-			battle_log.emit("%s usa Poção (+12 HP)." % current.display_name)
+			battle_log.emit("%s usa Poção (+%d HP)." % [current.display_name, 12 + heal_extra])
 		"semente":
 			current.restore_mp(8)
-			current.heal(4)
+			current.heal(4 + heal_extra)
 			AudioManager.sfx_heal()
-			battle_log.emit("%s usa Semente de Mylune (+4 HP, +8 MP)." % current.display_name)
+			battle_log.emit("%s usa Semente de Mylune (+%d HP, +8 MP)." % [current.display_name, 4 + heal_extra])
 		_:
-			current.heal(6)
+			current.heal(6 + heal_extra)
 			battle_log.emit("%s usa %s." % [current.display_name, item_id])
 	ui_refresh.emit()
 	busy = false
@@ -345,15 +361,23 @@ func player_use_item(item_id: String = "pocao") -> void:
 
 
 func _env_bonus_for(c: Combatant) -> int:
+	var base := 0
 	match String(c.class_id):
 		"warrior":
-			return maxi(0, int(env_dice.get("TERRA", 10)) / 5 - 1)
+			base = maxi(0, int(env_dice.get("TERRA", 10)) / 5 - 1)
 		"druid":
-			return maxi(0, int(env_dice.get("GELO", 6)) / 5)
+			base = maxi(0, int(env_dice.get("GELO", 6)) / 5)
 		"mage":
-			return maxi(0, int(env_dice.get("FOGO", 8)) / 4 - 1)
+			base = maxi(0, int(env_dice.get("FOGO", 8)) / 4 - 1)
 		_:
-			return 0
+			base = 0
+	var elem := "TERRA"
+	match String(c.class_id):
+		"druid":
+			elem = "GELO"
+		"mage":
+			elem = "FOGO"
+	return int(round(float(base) * GameState.env_mult(c.class_id, elem)))
 
 
 func _enemy_act(enemy: Combatant) -> void:
@@ -387,7 +411,13 @@ func _enemy_act(enemy: Combatant) -> void:
 	)
 	phase = Phase.REACTION
 	var mode := ReactionWindow.Mode.SPELL if kind == &"spell" else ReactionWindow.Mode.MELEE
-	reaction.begin(0.85, GameState.parry_window_bonus, mode)
+	reaction.begin(
+		0.85,
+		GameState.parry_window_bonus,
+		mode,
+		GameState.dodge_window_bonus,
+		GameState.spell_window_bonus
+	)
 	reaction_started.emit(reaction)
 	while reaction.open:
 		if Input.is_action_just_pressed("react"):
@@ -423,7 +453,9 @@ func _resolve_reaction(result: ReactionWindow.Result) -> void:
 			battle_log.emit("Esquiva! %s evita todo o dano." % pending_target.display_name)
 		ReactionWindow.Result.GUARD:
 			AudioManager.sfx_guard()
-			var reduced := maxi(1, int(pending_damage * 0.4))
+			var mit := 0.4 - GameState.guard_extra_mitigation(pending_target.class_id)
+			mit = clampf(mit, 0.2, 0.5)
+			var reduced := maxi(1, int(pending_damage * mit))
 			pending_target.take_damage(reduced)
 			battle_log.emit("Guardar! Dano reduzido para %d." % reduced)
 		ReactionWindow.Result.PARRY:
@@ -436,7 +468,7 @@ func _resolve_reaction(result: ReactionWindow.Result) -> void:
 			var reduced := maxi(1, int(pending_damage * 0.15))
 			pending_target.take_damage(reduced)
 			var counter := pending_target.attack_roll(rng)
-			var cdmg: int = int(counter["total"])
+			var cdmg: int = int(float(counter["total"]) * GameState.counter_damage_mult(pending_target.class_id))
 			pending_attacker.take_damage(cdmg)
 			battle_log.emit(
 				"Contra-ataque! Dano %d + retaliação %s (%d) sem gastar turno."
@@ -446,7 +478,7 @@ func _resolve_reaction(result: ReactionWindow.Result) -> void:
 			AudioManager.sfx_counterspell()
 			battle_log.emit("Contra-feitiço! %s anula a magia." % pending_target.display_name)
 			if pending_target.class_id == &"mage" or pending_target.id == &"magus":
-				var reflect := DiceEngine.roll_damage(1, 4, 2, rng)
+				var reflect := DiceEngine.roll_damage(1, 4, 2 + GameState.reflect_bonus(pending_target.class_id), rng)
 				var rdmg: int = int(reflect["total"])
 				pending_attacker.take_damage(rdmg)
 				battle_log.emit("Reflexo Arcano %s → %d no inimigo." % [reflect["label"], rdmg])

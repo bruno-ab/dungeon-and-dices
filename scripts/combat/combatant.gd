@@ -22,6 +22,7 @@ var color: Color = Color.WHITE
 var skill_name: String = "Ataque"
 var skill_formula: String = "1d6"
 var guarding: bool = false
+var guard_mitigation: float = 0.5
 var attack_kind: StringName = &"melee" ## melee | spell
 var level: int = 1
 var items: Array[String] = [] ## potion ids for Item menu
@@ -84,7 +85,7 @@ func is_alive() -> bool:
 
 func take_damage(amount: int) -> void:
 	if guarding:
-		amount = maxi(1, int(amount * 0.5))
+		amount = maxi(1, int(amount * guard_mitigation))
 		guarding = false
 	hp = maxi(0, hp - amount)
 	hp_changed.emit(hp, max_hp)

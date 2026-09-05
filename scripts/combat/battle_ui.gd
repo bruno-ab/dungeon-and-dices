@@ -92,6 +92,12 @@ func _process(_delta: float) -> void:
 		reaction_bar.value = battle.reaction.progress() * 100.0
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("skill_tree") and battle.phase != battle.Phase.REACTION:
+		SkillTreeUI.open_tree()
+		get_viewport().set_input_as_handled()
+
+
 func _apply_battleback() -> void:
 	var meta: Dictionary = EncounterCatalog.meta(battle.encounter_id)
 	var path: String = str(meta.get("battleback", ""))
@@ -330,6 +336,15 @@ func _on_battle_finished(won: bool) -> void:
 	end_label.text = "Vitória!" if won else "Derrota…"
 	if won:
 		end_label.text += "\n%s" % GameState.quest_text()
+		if GameState.skill_points > 0:
+			end_label.text += "\nSP: %d — abra a árvore." % GameState.skill_points
+	if not end_panel.get_node_or_null("VBox/SkillsBtn"):
+		var skills_btn := Button.new()
+		skills_btn.name = "SkillsBtn"
+		skills_btn.text = "Árvore de Skills (Tab)"
+		skills_btn.pressed.connect(func(): SkillTreeUI.open_tree())
+		end_panel.get_node("VBox").add_child(skills_btn)
+		end_panel.get_node("VBox").move_child(skills_btn, 1)
 
 
 func _flee() -> void:

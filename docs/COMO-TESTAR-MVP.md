@@ -38,6 +38,7 @@ Menu (Start Game)
 | Contra-atacar | **J** |
 | Contra-feitiço | **U** |
 | Timing genérico | **Espaço** |
+| Árvore de Skills | **Tab** / **T** |
 
 ## Lore
 
@@ -46,3 +47,7 @@ Ver `docs/lore-mittelerd.md` (adaptado do projeto Pot).
 ## Áudio
 
 Ver `docs/AUDIO.md`. BGM muda por cena; combate tem SFX de ataque, magia e reações.
+
+## Skills
+
+Ver `docs/SKILL-TREE.md`. Gaste SP na árvore (não mais nas teclas 1/2).

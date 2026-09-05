@@ -20,10 +20,16 @@ var spell_start: float = 0.20
 var spell_end: float = 0.55
 var pressed: bool = false
 var press_time: float = -1.0
-var chosen_action: StringName = &"auto" ## auto | guard | dodge | counter | counterspell
+var chosen_action: StringName = &"auto"
 
 
-func begin(p_duration: float, parry_bonus: float = 0.0, p_mode: Mode = Mode.MELEE) -> void:
+func begin(
+	p_duration: float,
+	parry_bonus: float = 0.0,
+	p_mode: Mode = Mode.MELEE,
+	dodge_bonus: float = 0.0,
+	spell_bonus: float = 0.0
+) -> void:
 	duration = p_duration
 	mode = p_mode
 	parry_start = maxf(0.05, 0.22 - parry_bonus * 0.5)
@@ -31,9 +37,9 @@ func begin(p_duration: float, parry_bonus: float = 0.0, p_mode: Mode = Mode.MELE
 	perfect_start = parry_start + (parry_end - parry_start) * 0.35
 	perfect_end = parry_start + (parry_end - parry_start) * 0.65
 	dodge_start = parry_end
-	dodge_end = minf(duration - 0.02, parry_end + 0.22)
-	spell_start = 0.18
-	spell_end = minf(duration - 0.05, 0.52 + parry_bonus)
+	dodge_end = minf(duration - 0.02, parry_end + 0.22 + dodge_bonus)
+	spell_start = maxf(0.08, 0.18 - spell_bonus * 0.3)
+	spell_end = minf(duration - 0.05, 0.52 + spell_bonus)
 	elapsed = 0.0
 	pressed = false
 	press_time = -1.0
@@ -67,7 +73,6 @@ func evaluate() -> Result:
 			if t >= spell_start and t <= spell_end:
 				return Result.COUNTERSPELL
 		return Result.MISS
-	# MELEE
 	match String(chosen_action):
 		"guard":
 			if t >= parry_start and t <= dodge_end:
@@ -97,17 +102,3 @@ func progress() -> float:
 	if duration <= 0.0:
 		return 1.0
 	return clampf(elapsed / duration, 0.0, 1.0)
-
-
-func window_die_hint(action: StringName) -> String:
-	match String(action):
-		"guard":
-			return "Janela: d6"
-		"dodge":
-			return "Janela: d8"
-		"counter":
-			return "Janela: d6"
-		"counterspell":
-			return "Janela: d4"
-		_:
-			return ""
