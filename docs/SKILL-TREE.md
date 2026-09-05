@@ -1,29 +1,33 @@
 # Árvore de Skills
 
+Fonte de verdade das regras: [`docs/classes.md`](classes.md).
+
 ## Abrir
 
 - **Tab** ou **T** na vila (e fora da janela de reação no combate)
 - Pause (Esc) → “Árvore de Skills”
 - Após vitória → botão na tela de fim
 
-## Classes (7 nós cada)
+## Classes e ramos
 
-| Classe | Personagem | Destaques |
-|--------|------------|-----------|
-| Guerreiro | Otto | Parry largo, +dados, contra brutal, Marreta |
-| Druida | Mira | Esquiva, seiva, GELO×2, Florescer |
-| Mago | Magus | Contra-feitiço largo, FOGO×2, Espelho |
+| Classe | Personagem | Dado | Ramos |
+|--------|------------|------|-------|
+| Guerreiro | Otto | d10 (1→2→3 nos Nv.5/10) | Núcleo · Vanguarda · Executor |
+| Druida | Mira | d6 / d12 Urso / d8 Pantera | Núcleo · Restauração · Metamorfose |
+| Mago | Magus | Nd4 elemental · 1d20 ritual | Núcleo · Elemental · Anulação |
 
-Árvores de Mira/Magus só aparecem após recrutamento.
+Árvores de Mira/Magus só aparecem após recrutamento. Nós núcleo (Força Bruta / Forma Humana / Faísca) vêm gratuitos ao iniciar ou recrutar.
 
 ## Regras
 
 - 1 SP no início da run; +1 SP por nível
-- Pré-requisitos por tier; nós finais custam 2 SP
-- Efeitos aplicados em `GameState.apply_combatant_skills` e janelas de reação
+- Pré-requisitos e Nv. mínimo por nó; capstones custam 2 SP
+- Pool base por nível via `ClassRules`; skills adicionam `extra_dice`, janelas e efeitos
+- Combate: crítico ~5%, máximo no d10 = stun, formas da druida, Power Attack/Defense/War Cry, Ritual d20
 
 ## Código
 
+- `scripts/progression/class_rules.gd`
 - `scripts/progression/skill_def.gd`
 - `scripts/progression/skill_catalog.gd`
 - `scenes/ui/skill_tree.tscn` (autoload `SkillTreeUI`)

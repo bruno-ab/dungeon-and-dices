@@ -234,12 +234,14 @@ func _apply_effects(effects: Variant) -> void:
 			"recruit_mira":
 				if not GameState.recruited_mira:
 					GameState.recruited_mira = true
+					GameState.grant_class_seed(&"druid")
 					GameState.set_dialogue_flag("recruited_mira", true)
 					GameState.party_changed.emit()
 					GameState.quest_updated.emit(GameState.quest_text())
 			"recruit_magus":
 				if not GameState.recruited_magus:
 					GameState.recruited_magus = true
+					GameState.grant_class_seed(&"mage")
 					GameState.set_dialogue_flag("recruited_magus", true)
 					GameState.party_changed.emit()
 					GameState.quest_updated.emit(GameState.quest_text())

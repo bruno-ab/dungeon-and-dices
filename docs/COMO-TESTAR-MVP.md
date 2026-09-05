@@ -23,9 +23,11 @@ Menu (Start Game)
 
 | Classe | Personagem | Dado | Destaque |
 |--------|------------|------|----------|
-| Guerreiro | Otto | d10 | Lâmina Severa, Guard |
-| Druida | Mira | d6 | Magia / Semente |
-| Mago | Magus | d8 / janela d4 | Contra-feitiço |
+| Guerreiro | Otto | d10 (pool Nv.5/10) | Aparo / Contra / Power Attack |
+| Druida | Mira | d6 / d12 / d8 | Formas + cura / esquiva |
+| Mago | Magus | Nd4 / Ritual d20 | Contra-feitiço |
+
+Regras completas: `docs/classes.md`. Árvore: Tab.
 
 ## Controles (combate)
 

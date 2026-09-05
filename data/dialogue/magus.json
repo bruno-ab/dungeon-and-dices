@@ -79,7 +79,7 @@
       ]
     },
     "recruit_yes": {
-      "text": "Classe Mago: Magia e Contra-feitiço. Dados d8 / janela d4.",
+      "text": "Classe Mago: Magia elemental Nd4 e Ritual d20. Especialista em Contra-feitiço.",
       "effects": [
         { "type": "recruit_magus" },
         { "type": "play_me", "track": "Fanfare1" }

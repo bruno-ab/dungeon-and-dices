@@ -24,12 +24,14 @@ extends Control
 @onready var btn_item: Button = $UI/Dashboard/Margin/VBox/DashRow/CenterCol/SubRow/Item
 @onready var btn_flee: Button = $UI/Dashboard/Margin/VBox/DashRow/CenterCol/SubRow/Flee
 @onready var targets_row: HBoxContainer = $UI/Dashboard/Margin/VBox/DashRow/CenterCol/Targets
+@onready var center_col: VBoxContainer = $UI/Dashboard/Margin/VBox/DashRow/CenterCol
 @onready var end_panel: PanelContainer = $UI/EndPanel
 @onready var end_label: Label = $UI/EndPanel/VBox/EndLabel
 @onready var btn_return: Button = $UI/EndPanel/VBox/ReturnBtn
 
 var _stage_sprites: Dictionary = {}
 var _actions_on: bool = false
+var _extra_row: HBoxContainer
 
 
 func _ready() -> void:
@@ -37,6 +39,12 @@ func _ready() -> void:
 	reaction_bar.visible = false
 	reaction_hint.visible = false
 	title_l.text = GameState.GAME_TITLE
+	_extra_row = HBoxContainer.new()
+	_extra_row.name = "ExtraRow"
+	_extra_row.add_theme_constant_override("separation", 6)
+	center_col.add_child(_extra_row)
+	center_col.move_child(_extra_row, btn_attack.get_index() + 1)
+
 	battle.battle_log.connect(_append_log)
 	battle.ui_refresh.connect(_refresh)
 	battle.player_actions_enabled.connect(_set_actions)
@@ -159,12 +167,68 @@ func _set_actions(enabled: bool) -> void:
 	btn_magic.disabled = not enabled
 	btn_item.disabled = not enabled
 	btn_flee.disabled = not enabled
-	# reações ficam ativas só na janela; botões de turno também usam Guard
 	btn_guard.disabled = false
 	btn_dodge.disabled = false
 	btn_counter.disabled = false
 	btn_cspell.disabled = false
 	_rebuild_targets()
+	_rebuild_extra_actions()
+
+
+func _rebuild_extra_actions() -> void:
+	for c in _extra_row.get_children():
+		c.queue_free()
+	if battle.current == null or not battle.current.is_player_side:
+		return
+	var cur: Combatant = battle.current
+	if cur.class_id == &"warrior":
+		if GameState.has_power_attack(&"warrior"):
+			_extra_row.add_child(_extra_btn("Power Atk", func():
+				AudioManager.sfx_ui_confirm()
+				battle.player_arm_power_attack()
+			))
+		if GameState.has_power_defense(&"warrior"):
+			_extra_row.add_child(_extra_btn("Power Def", func():
+				AudioManager.sfx_ui_confirm()
+				battle.player_power_defense()
+			))
+		if GameState.has_war_cry(&"warrior"):
+			_extra_row.add_child(_extra_btn("War Cry", func():
+				AudioManager.sfx_ui_confirm()
+				battle.player_war_cry()
+			))
+	elif cur.class_id == &"druid":
+		_extra_row.add_child(_extra_btn("Humana", func():
+			AudioManager.sfx_ui_confirm()
+			battle.player_shift_form(&"human")
+		))
+		if cur.unlock_bear:
+			_extra_row.add_child(_extra_btn("Urso", func():
+				AudioManager.sfx_ui_confirm()
+				battle.player_shift_form(&"bear")
+			))
+		if cur.unlock_panther:
+			_extra_row.add_child(_extra_btn("Pantera", func():
+				AudioManager.sfx_ui_confirm()
+				battle.player_shift_form(&"panther")
+			))
+	elif cur.class_id == &"mage":
+		if GameState.has_ritual(&"mage"):
+			var rit := _extra_btn("Ritual d20", func():
+				AudioManager.sfx_ui_confirm()
+				battle.player_toggle_ritual()
+			)
+			if battle.ritual_mode:
+				rit.modulate = Color(1.0, 0.75, 0.4)
+			_extra_row.add_child(rit)
+
+
+func _extra_btn(text: String, cb: Callable) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.disabled = not _actions_on
+	b.pressed.connect(cb)
+	return b
 
 
 func _rebuild_targets() -> void:
@@ -258,6 +322,7 @@ func _refresh() -> void:
 		skill_l.text = "[%s]" % battle.current.skill_name.to_upper()
 		formula_l.text = battle.current.skill_formula
 	_rebuild_targets()
+	_rebuild_extra_actions()
 	_on_timeline(battle.timeline_order())
 
 

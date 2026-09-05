@@ -16,8 +16,8 @@ A **Vila de Cinzas** é um vilarejo de fronteira — refúgio de desertados, mer
 | Classe | Nome | Dado | Fantasia |
 |--------|------|------|----------|
 | Guerreiro | **Otto** | d10 | Cavaleiro da Marreta; culpa e força bruta |
-| Druida | **Mira** (Lyra) | d6 | Magia clandestina da terra; cura e formas |
-| Mago | **Magus** (Kelvin) | d4/d8 | Ex-Sentinela; Counterspell e Arcano proibido |
+| Druida | **Mira** (Lyra) | d6/d12/d8 | Magia clandestina; cura e formas |
+| Mago | **Magus** (Kelvin) | Nd4 / d20 | Ex-Sentinela; Counterspell e Arcano proibido |
 
 ## Criaturas & combates
 

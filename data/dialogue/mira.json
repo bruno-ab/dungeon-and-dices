@@ -13,7 +13,7 @@
       "next": "first_meet_2"
     },
     "first_meet_2": {
-      "text": "Sou Mira. Druida clandestina — meu dado é [color=#7dcea0]d6[/color]. Quer companhia?",
+      "text": "Sou Mira. Druida clandestina — d6 humana, d12 urso, d8 pantera. Quer companhia?",
       "choices": [
         { "text": "Sim. Venha comigo.", "next": "recruit_yes" },
         { "text": "Quero saber mais primeiro", "next": "about_self" },

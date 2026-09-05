@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-## Árvore de skills por classe — gasta skill points com pré-requisitos.
+## Árvore de skills por classe/ramos — `docs/classes.md`.
 
 signal closed
 
@@ -75,48 +75,64 @@ func _rebuild_tabs() -> void:
 
 
 func _refresh() -> void:
-	points_l.text = "Skill Points: %d  ·  Nv.%d" % [GameState.skill_points, GameState.player_level]
+	points_l.text = "Skill Points: %d  ·  Nv.%d  ·  %s" % [
+		GameState.skill_points, GameState.player_level, ClassRules.class_blurb(_class)
+	]
 	for c in tree_box.get_children():
 		c.queue_free()
-	var by_tier: Dictionary = {}
+
+	## Agrupa por ramo, depois por tier
+	var by_branch: Dictionary = {}
 	for def in SkillCatalog.defs_for(_class):
-		if not by_tier.has(def.tier):
-			by_tier[def.tier] = []
-		by_tier[def.tier].append(def)
-	var tiers: Array = by_tier.keys()
-	tiers.sort()
-	for tier in tiers:
-		var row := HBoxContainer.new()
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
-		row.add_theme_constant_override("separation", 10)
-		var tier_l := Label.new()
-		tier_l.text = "T%d" % int(tier)
-		tier_l.custom_minimum_size = Vector2(36, 0)
-		row.add_child(tier_l)
-		for def in by_tier[tier]:
-			row.add_child(_make_node_button(def))
-		tree_box.add_child(row)
-		if int(tier) < int(tiers[tiers.size() - 1]):
-			var arrow := Label.new()
-			arrow.text = "↓"
-			arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			tree_box.add_child(arrow)
+		var bkey := String(def.branch)
+		if not by_branch.has(bkey):
+			by_branch[bkey] = []
+		by_branch[bkey].append(def)
+
+	var branch_order: PackedStringArray = ["core", "vanguard", "executor", "restoration", "metamorph", "elemental", "nullify"]
+	var ordered_keys: PackedStringArray = []
+	for key in branch_order:
+		if by_branch.has(key):
+			ordered_keys.append(key)
+	for key in by_branch.keys():
+		if key not in ordered_keys:
+			ordered_keys.append(key)
+
+	for bkey in ordered_keys:
+		var branch_title := Label.new()
+		branch_title.text = "▸ %s" % ClassRules.branch_label(StringName(bkey))
+		branch_title.add_theme_color_override("font_color", Color(0.85, 0.75, 0.45))
+		tree_box.add_child(branch_title)
+
+		var by_tier: Dictionary = {}
+		for def in by_branch[bkey]:
+			if not by_tier.has(def.tier):
+				by_tier[def.tier] = []
+			by_tier[def.tier].append(def)
+		var tiers: Array = by_tier.keys()
+		tiers.sort()
+		for tier in tiers:
+			var row := HBoxContainer.new()
+			row.alignment = BoxContainer.ALIGNMENT_CENTER
+			row.add_theme_constant_override("separation", 10)
+			var tier_l := Label.new()
+			tier_l.text = "T%d" % int(tier)
+			tier_l.custom_minimum_size = Vector2(36, 0)
+			row.add_child(tier_l)
+			for def in by_tier[tier]:
+				row.add_child(_make_node_button(def))
+			tree_box.add_child(row)
+
 	_update_detail()
 
 
 func _make_node_button(def: SkillDef) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(160, 64)
+	b.custom_minimum_size = Vector2(168, 68)
 	var unlocked := GameState.has_skill(def.id)
 	var can := GameState.can_unlock_skill(def.id)
-	var prereq_txt := ""
-	if not def.prerequisites.is_empty():
-		var names: PackedStringArray = []
-		for p in def.prerequisites:
-			var pd := SkillCatalog.get_def(p)
-			names.append(pd.display_name if pd else String(p))
-		prereq_txt = "\n← %s" % ", ".join(names)
-	b.text = "%s\n(%d SP)%s" % [def.display_name, def.cost, prereq_txt]
+	var cost_txt := "grátis" if def.cost <= 0 else "%d SP" % def.cost
+	b.text = "%s\n(%s · Nv.%d)" % [def.display_name, cost_txt, def.level_req]
 	if unlocked:
 		b.modulate = Color(0.55, 0.95, 0.65)
 		b.disabled = false
@@ -138,7 +154,10 @@ func _make_node_button(def: SkillDef) -> Button:
 func _update_detail() -> void:
 	if _selected == &"":
 		detail_title.text = SkillCatalog.class_label(_class)
-		detail_body.text = "Selecione um nó. Amarelo = pode desbloquear. Verde = já aprendido."
+		detail_body.text = (
+			"%s\n\nSelecione um nó. Amarelo = pode desbloquear. Verde = já aprendido.\nRamos conforme docs/classes.md."
+			% ClassRules.class_blurb(_class)
+		)
 		unlock_btn.disabled = true
 		return
 	var def := SkillCatalog.get_def(_selected)
@@ -153,9 +172,16 @@ func _update_detail() -> void:
 	var fx_lines: PackedStringArray = []
 	for k in def.effects.keys():
 		fx_lines.append("• %s: %s" % [k, str(def.effects[k])])
+	var prereq := "—"
+	if not def.prerequisites.is_empty():
+		var names: PackedStringArray = []
+		for p in def.prerequisites:
+			var pd := SkillCatalog.get_def(p)
+			names.append(pd.display_name if pd else String(p))
+		prereq = ", ".join(names)
 	detail_body.text = (
-		"[b]%s[/b]\nNv. mín %d · Custo %d SP\n\n%s\n\nEfeitos:\n%s"
-		% [status, def.level_req, def.cost, def.description, "\n".join(fx_lines)]
+		"[b]%s[/b] · Ramo %s\nNv. mín %d · Custo %d SP\nPré: %s\n\n%s\n\nEfeitos:\n%s"
+		% [status, ClassRules.branch_label(def.branch), def.level_req, def.cost, prereq, def.description, "\n".join(fx_lines)]
 	)
 	unlock_btn.disabled = not GameState.can_unlock_skill(def.id)
 

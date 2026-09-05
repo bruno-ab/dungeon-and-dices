@@ -54,8 +54,8 @@ func reset_run() -> void:
 	skill_points = 1 ## um ponto inicial para experimentar a árvore
 	max_hp = BASE_MAX_HP
 	current_hp = BASE_MAX_HP
-	dice_count = 1
-	dice_sides = 10
+	dice_count = ClassRules.pool_count(&"warrior", 1)
+	dice_sides = ClassRules.base_die(&"warrior")
 	parry_window_bonus = 0.0
 	dodge_window_bonus = 0.0
 	spell_window_bonus = 0.0
@@ -74,6 +74,7 @@ func reset_run() -> void:
 	cleared_trilha = false
 	cleared_cemiterio = false
 	spawn_point = "plaza"
+	grant_class_seed(&"warrior")
 	_recompute_from_skills()
 	party_changed.emit()
 	skill_points_changed.emit(skill_points)
@@ -98,12 +99,11 @@ func grant_xp(amount: int) -> void:
 		skill_points += 1
 		max_hp += 8
 		current_hp = max_hp
-		if player_level == 5 or player_level == 10:
-			dice_count += 1
 		leveled = true
 		skill_points_changed.emit(skill_points)
 	xp_gained.emit(amount, player_level)
 	if leveled:
+		dice_count = ClassRules.pool_count(&"warrior", player_level)
 		AudioManager.sfx_level_up()
 		log_message.emit("Subiu para o nível %d! Skill points: %d — abra a Árvore (Tab)." % [player_level, skill_points])
 		_recompute_from_skills()
@@ -151,6 +151,23 @@ func unlock_skill(skill_id: StringName) -> bool:
 	AudioManager.sfx_level_up()
 	log_message.emit("Skill desbloqueada: %s (%s)." % [def.display_name, SkillCatalog.class_label(def.class_id)])
 	return true
+
+
+func grant_class_seed(class_id: StringName) -> void:
+	## Nós núcleo gratuitos ao recrutar / iniciar
+	var seed_id: StringName = &""
+	match String(class_id):
+		"warrior":
+			seed_id = &"w_brute"
+		"druid":
+			seed_id = &"d_seed"
+		"mage":
+			seed_id = &"m_spark"
+	if seed_id == &"" or has_skill(seed_id):
+		return
+	unlocked_skills[String(seed_id)] = true
+	_recompute_from_skills()
+	skills_changed.emit()
 
 
 func _class_available(class_id: StringName) -> bool:
@@ -207,12 +224,24 @@ func _recompute_from_skills() -> void:
 
 func apply_combatant_skills(c: Combatant) -> void:
 	var cid := c.class_id
-	c.dice_count += int(effect_sum("extra_dice", cid))
+	c.dice_count = ClassRules.pool_count(cid, c.level) + int(effect_sum("extra_dice", cid))
 	c.flat_bonus += int(effect_sum("flat_bonus", cid))
 	c.speed += int(effect_sum("speed", cid))
 	c.max_mp += int(effect_sum("max_mp", cid))
 	c.mp = c.max_mp
-	c.skill_formula = "%dd%d + %d" % [c.dice_count, c.dice_sides, c.flat_bonus]
+	c.reroll_low = int(effect_sum("reroll_low", cid))
+	c.force_max_first = effect_sum("force_max_first", cid) > 0.0
+	c.last_stand_ready = effect_sum("last_stand", cid) > 0.0
+	c.unlock_bear = effect_sum("unlock_form_bear", cid) > 0.0
+	c.unlock_panther = effect_sum("unlock_form_panther", cid) > 0.0
+	c.form_keep_bonus = int(effect_sum("form_keep_bonus", cid))
+	if cid == &"druid":
+		c.dice_sides = ClassRules.die_for_form(c.form)
+	elif cid == &"mage":
+		c.dice_sides = ClassRules.base_die(&"mage")
+	elif cid == &"warrior":
+		c.dice_sides = ClassRules.base_die(&"warrior")
+	c.refresh_formula()
 
 
 func magic_cost_for(class_id: StringName, base_cost: int = 4) -> int:
@@ -236,7 +265,43 @@ func reflect_bonus(class_id: StringName) -> int:
 
 
 func heal_item_bonus(class_id: StringName) -> int:
-	return int(effect_sum("heal_bonus", class_id))
+	var bonus := int(effect_sum("heal_bonus", class_id))
+	var die := int(effect_sum("heal_bonus_die", class_id))
+	if die > 0:
+		bonus += die ## média simplificada: faces do bônus de cura
+	return bonus
+
+
+func has_power_attack(class_id: StringName) -> bool:
+	return effect_sum("power_attack", class_id) > 0.0
+
+
+func has_power_defense(class_id: StringName) -> bool:
+	return effect_sum("power_defense", class_id) > 0.0
+
+
+func has_war_cry(class_id: StringName) -> bool:
+	return effect_sum("war_cry", class_id) > 0.0
+
+
+func has_ritual(class_id: StringName) -> bool:
+	return effect_sum("ritual_d20", class_id) > 0.0
+
+
+func parry_heals(class_id: StringName) -> bool:
+	return effect_sum("parry_heal_die", class_id) > 0.0
+
+
+func parry_allows_counter(class_id: StringName) -> bool:
+	return effect_sum("parry_counters", class_id) > 0.0
+
+
+func crit_ally_bonus(class_id: StringName) -> int:
+	return int(effect_sum("crit_ally_bonus", class_id))
+
+
+func counterspell_mp_restore(class_id: StringName) -> int:
+	return int(effect_sum("counterspell_mp", class_id))
 
 
 func env_mult(class_id: StringName, element: String) -> float:
@@ -257,17 +322,17 @@ func warrior_magic_free() -> bool:
 
 ## Compat legado (atalhos 1/2 redirecionam para skills da árvore)
 func spend_skill_widen_parry() -> bool:
-	if has_skill(&"w_parry"):
-		log_message.emit("Aparo Largo já desbloqueado na árvore (Tab).")
+	if has_skill(&"w_window"):
+		log_message.emit("Postura de Aparo já desbloqueada na árvore (Tab).")
 		return false
-	return unlock_skill(&"w_parry") if can_unlock_skill(&"w_parry") else _legacy_fail()
+	return unlock_skill(&"w_window") if can_unlock_skill(&"w_window") else _legacy_fail()
 
 
 func spend_skill_extra_die() -> bool:
-	if has_skill(&"w_die"):
-		log_message.emit("Segundo Dado já desbloqueado na árvore (Tab).")
+	if has_skill(&"w_pool5"):
+		log_message.emit("Segundo d10 já desbloqueado na árvore (Tab).")
 		return false
-	return unlock_skill(&"w_die") if can_unlock_skill(&"w_die") else _legacy_fail()
+	return unlock_skill(&"w_pool5") if can_unlock_skill(&"w_pool5") else _legacy_fail()
 
 
 func _legacy_fail() -> bool:

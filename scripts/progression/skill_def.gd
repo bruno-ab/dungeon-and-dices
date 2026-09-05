@@ -1,17 +1,18 @@
 class_name SkillDef
 extends RefCounted
 
-## Definição estática de um nó da árvore (não mutável em runtime).
+## Definição estática de um nó da árvore (docs/classes.md).
 
 var id: StringName
 var class_id: StringName ## warrior | druid | mage
 var display_name: String
 var description: String
+var branch: StringName = &"core" ## vanguard | executor | restoration | metamorph | elemental | nullify | core
 var tier: int = 0
 var cost: int = 1
 var level_req: int = 1
 var prerequisites: Array[StringName] = []
-var effects: Dictionary = {} ## chave -> valor numérico
+var effects: Dictionary = {} ## chave -> valor
 
 
 func _init(
@@ -23,7 +24,8 @@ func _init(
 	p_cost: int = 1,
 	p_level: int = 1,
 	p_prereqs: Array = [],
-	p_effects: Dictionary = {}
+	p_effects: Dictionary = {},
+	p_branch: StringName = &"core"
 ) -> void:
 	id = p_id
 	class_id = p_class
@@ -32,6 +34,7 @@ func _init(
 	tier = p_tier
 	cost = p_cost
 	level_req = p_level
+	branch = p_branch
 	prerequisites.clear()
 	for p in p_prereqs:
 		prerequisites.append(StringName(p))

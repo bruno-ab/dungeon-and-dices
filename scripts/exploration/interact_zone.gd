@@ -41,6 +41,7 @@ func _activate() -> void:
 				GameState.log_message.emit("Mira já está no grupo.")
 			else:
 				GameState.recruited_mira = true
+				GameState.grant_class_seed(&"druid")
 				GameState.party_changed.emit()
 				GameState.log_message.emit("Mira se juntou ao grupo!")
 		"heal":

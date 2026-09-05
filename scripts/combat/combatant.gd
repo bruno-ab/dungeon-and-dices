@@ -27,6 +27,21 @@ var attack_kind: StringName = &"melee" ## melee | spell
 var level: int = 1
 var items: Array[String] = [] ## potion ids for Item menu
 
+## Estado de combate (classes.md)
+var form: StringName = &"human" ## human | bear | panther
+var armor_bonus: int = 0 ## reduz dano até o próximo turno próprio
+var next_die_bonus: int = 0 ## +flat no próximo ataque
+var stunned: bool = false
+var last_stand_ready: bool = false
+var last_stand_used: bool = false
+var power_attack_armed: bool = false
+var force_max_first: bool = false
+var reroll_low: int = 0
+var unlock_bear: bool = false
+var unlock_panther: bool = false
+var form_keep_bonus: int = 0
+var ally_crit_bonus_pending: int = 0 ## Crítico Brutal
+
 
 func _init(
 	p_id: StringName = &"",
@@ -54,43 +69,78 @@ func _init(
 
 func configure_class(p_class: StringName) -> void:
 	class_id = p_class
+	form = &"human"
 	match String(p_class):
 		"warrior":
-			dice_sides = 10
-			skill_name = "Lâmina Severa"
-			skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
+			dice_sides = ClassRules.base_die(&"warrior")
+			skill_name = ClassRules.skill_name_default(&"warrior")
 			max_mp = 8
 			color = Color(0.85, 0.35, 0.3)
 		"druid":
-			dice_sides = 6
-			skill_name = "Raiz de Mylune"
-			skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
+			dice_sides = ClassRules.die_for_form(form)
+			skill_name = ClassRules.skill_name_default(&"druid")
 			max_mp = 18
 			color = Color(0.35, 0.75, 0.4)
 		"mage":
-			dice_sides = 8
-			skill_name = "Contra-Véu"
-			skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
+			dice_sides = ClassRules.base_die(&"mage")
+			skill_name = ClassRules.skill_name_default(&"mage")
 			max_mp = 24
 			color = Color(0.65, 0.45, 0.9)
 		_:
 			pass
 	mp = max_mp
+	refresh_formula()
+
+
+func refresh_formula() -> void:
 	skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
+	if class_id == &"druid":
+		skill_formula = "%s · %s" % [ClassRules.form_label(form), skill_formula]
+
+
+func set_form(p_form: StringName) -> bool:
+	if class_id != &"druid":
+		return false
+	if p_form == &"bear" and not unlock_bear:
+		return false
+	if p_form == &"panther" and not unlock_panther:
+		return false
+	if form_keep_bonus > 0 and form != p_form:
+		flat_bonus += form_keep_bonus
+	form = p_form
+	dice_sides = ClassRules.die_for_form(form)
+	match String(form):
+		"bear":
+			skill_name = "Garra de Urso"
+		"panther":
+			skill_name = "Salto da Pantera"
+		_:
+			skill_name = ClassRules.skill_name_default(&"druid")
+	refresh_formula()
+	return true
 
 
 func is_alive() -> bool:
 	return hp > 0
 
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int) -> bool:
+	## Retorna true se Último Fôlego acabou de ativar.
+	amount = maxi(0, amount - armor_bonus)
 	if guarding:
-		amount = maxi(1, int(amount * guard_mitigation))
+		amount = maxi(1, int(amount * guard_mitigation)) if amount > 0 else 0
 		guarding = false
 	hp = maxi(0, hp - amount)
+	if hp <= 0 and last_stand_ready and not last_stand_used:
+		last_stand_used = true
+		var revive := dice_sides
+		hp = mini(max_hp, revive)
+		hp_changed.emit(hp, max_hp)
+		return true
 	hp_changed.emit(hp, max_hp)
 	if hp <= 0:
 		defeated.emit()
+	return false
 
 
 func heal(amount: int) -> void:
@@ -111,8 +161,24 @@ func restore_mp(amount: int) -> void:
 	mp_changed.emit(mp, max_mp)
 
 
+func attack_opts() -> Dictionary:
+	return {
+		"reroll_low": reroll_low,
+		"force_max_first": force_max_first,
+		"allow_crit": class_id != &"mage",
+		"crit_chance": 0.08 if form == &"panther" else 0.05,
+	}
+
+
 func attack_roll(rng: RandomNumberGenerator) -> Dictionary:
-	return DiceEngine.roll_damage(dice_count, dice_sides, flat_bonus, rng)
+	var count := dice_count
+	var flat := flat_bonus + next_die_bonus
+	next_die_bonus = 0
+	if power_attack_armed:
+		count += 1
+		power_attack_armed = false
+	var result := DiceEngine.roll_damage(count, dice_sides, flat, rng, attack_opts())
+	return result
 
 
 func class_label() -> String:
@@ -128,4 +194,8 @@ func class_label() -> String:
 
 
 func die_label() -> String:
+	if class_id == &"druid":
+		return "d%d (%s)" % [dice_sides, ClassRules.form_label(form)]
+	if class_id == &"mage":
+		return "%dd4 / d20" % dice_count
 	return "d%d" % dice_sides
