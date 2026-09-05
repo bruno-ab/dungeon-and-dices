@@ -2,6 +2,8 @@ extends Control
 
 
 func _ready() -> void:
+	AudioManager.play_bgm("Theme3")
+	AudioManager.me_fanfare()
 	%Title.text = "Fase concluída"
 	%Body.text = (
 		"A Vila de Cinzas respira de novo.\n"

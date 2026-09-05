@@ -48,15 +48,36 @@ func _ready() -> void:
 	battle.env_changed.connect(_on_env)
 	battle.turn_index_changed.connect(func(n: int): env_l.text = _env_text(battle.env_dice, n))
 
-	btn_attack.pressed.connect(func(): battle.player_attack())
+	btn_attack.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.player_attack()
+	)
 	btn_guard.pressed.connect(_on_guard_pressed)
-	btn_dodge.pressed.connect(func(): battle.register_reaction_choice(&"dodge"))
-	btn_counter.pressed.connect(func(): battle.register_reaction_choice(&"counter"))
-	btn_cspell.pressed.connect(func(): battle.register_reaction_choice(&"counterspell"))
-	btn_magic.pressed.connect(func(): battle.player_cast_magic())
-	btn_item.pressed.connect(func(): battle.player_use_item())
+	btn_dodge.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.register_reaction_choice(&"dodge")
+	)
+	btn_counter.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.register_reaction_choice(&"counter")
+	)
+	btn_cspell.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.register_reaction_choice(&"counterspell")
+	)
+	btn_magic.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.player_cast_magic()
+	)
+	btn_item.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.player_use_item()
+	)
 	btn_flee.pressed.connect(_flee)
-	btn_return.pressed.connect(SceneRouter.go_hub)
+	btn_return.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		SceneRouter.go_hub()
+	)
 
 	_set_actions(false)
 	battle.setup_encounter(GameState.pending_encounter)
@@ -119,6 +140,7 @@ func _append_log(text: String) -> void:
 
 
 func _on_guard_pressed() -> void:
+	AudioManager.sfx_ui_confirm()
 	if battle.phase == battle.Phase.REACTION:
 		battle.register_reaction_choice(&"guard")
 	else:
@@ -287,6 +309,7 @@ func _make_party_card(c: Combatant) -> PanelContainer:
 func _on_reaction_started(window: ReactionWindow) -> void:
 	reaction_bar.visible = true
 	reaction_hint.visible = true
+	AudioManager.play_sfx("Skill1", 1.1, -4.0)
 	if window.mode == ReactionWindow.Mode.SPELL:
 		reaction_hint.text = "FEITIÇO INIMIGO! Contra-feitiço (U / botão) na janela d4"
 	else:
@@ -310,6 +333,7 @@ func _on_battle_finished(won: bool) -> void:
 
 
 func _flee() -> void:
+	AudioManager.sfx_flee()
 	GameState.last_battle_result = "flee"
 	GameState.current_hp = maxi(1, GameState.current_hp - 3)
 	SceneRouter.go_hub()

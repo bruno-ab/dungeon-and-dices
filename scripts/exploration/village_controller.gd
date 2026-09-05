@@ -7,6 +7,7 @@ extends Node2D
 
 
 func _ready() -> void:
+	AudioManager.bgm_village()
 	GameState.log_message.connect(_on_log)
 	GameState.party_changed.connect(_refresh_hud)
 	GameState.xp_gained.connect(func(_a, _l): _refresh_hud())
@@ -36,6 +37,7 @@ func _place_player() -> void:
 func _handle_return_from_battle() -> void:
 	match GameState.last_battle_result:
 		"victory":
+			AudioManager.play_ui("Bell1")
 			_on_log("Você retorna à Vila de Cinzas. %s" % GameState.quest_text())
 		"defeat":
 			GameState.heal_full()

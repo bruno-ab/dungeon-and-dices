@@ -6,6 +6,7 @@ extends CharacterBody2D
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
 var _facing: StringName = &"front" ## front | back | left
+var _foot_cd: float = 0.0
 
 
 func _ready() -> void:
@@ -15,11 +16,15 @@ func _ready() -> void:
 	anim.play("idle_front")
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = dir * speed
 	move_and_slide()
 	_update_anim(dir)
+	_foot_cd = maxf(0.0, _foot_cd - delta)
+	if dir.length() > 0.1 and _foot_cd <= 0.0:
+		AudioManager.sfx_footstep()
+		_foot_cd = 0.28
 
 
 func _update_anim(dir: Vector2) -> void:

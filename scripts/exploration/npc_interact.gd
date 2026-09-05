@@ -43,6 +43,8 @@ func _activate() -> void:
 	match mode:
 		"heal":
 			GameState.heal_full()
+			AudioManager.me_inn()
+			AudioManager.sfx_heal()
 			GameState.log_message.emit("A estalagem restaurou seu HP.")
 			_talk(speaker_name, dialogue_lines)
 		"recruit":
@@ -52,6 +54,7 @@ func _activate() -> void:
 				GameState.recruited_mira = true
 				GameState.party_changed.emit()
 				GameState.quest_updated.emit(GameState.quest_text())
+				AudioManager.me_fanfare()
 				_talk("Mira", PackedStringArray([
 					"Ouvi Magus. Posso lutar ao seu lado.",
 					"Sou druida — meu dado é d6. Forma e cura clandestina.",
@@ -129,6 +132,7 @@ func _elder() -> void:
 		GameState.recruited_magus = true
 		GameState.party_changed.emit()
 		GameState.quest_updated.emit(GameState.quest_text())
+		AudioManager.me_fanfare()
 		_talk(name, PackedStringArray([
 			"Levarei o Arcano à batalha — longe dos olhos de Vasta.",
 			"Classe Mago: Magia e Contra-feitiço. Dados d8 / janela d4.",

@@ -26,6 +26,7 @@ func show_dialogue(speaker: String, lines: PackedStringArray, on_finished: Calla
 	visible = true
 	get_tree().paused = true
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	AudioManager.sfx_interact()
 	_show_current()
 	continue_btn.grab_focus()
 
@@ -35,9 +36,11 @@ func _show_current() -> void:
 		_finish()
 		return
 	body_l.text = _lines[_index]
+	AudioManager.sfx_dialogue()
 
 
 func _on_continue() -> void:
+	AudioManager.sfx_ui_cursor()
 	_index += 1
 	_show_current()
 

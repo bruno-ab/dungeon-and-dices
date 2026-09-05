@@ -42,3 +42,7 @@ Menu (Start Game)
 ## Lore
 
 Ver `docs/lore-mittelerd.md` (adaptado do projeto Pot).
+
+## Áudio
+
+Ver `docs/AUDIO.md`. BGM muda por cena; combate tem SFX de ataque, magia e reações.

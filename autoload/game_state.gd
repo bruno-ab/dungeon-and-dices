@@ -85,6 +85,7 @@ func grant_xp(amount: int) -> void:
 		skill_points_changed.emit(skill_points)
 	xp_gained.emit(amount, player_level)
 	if leveled:
+		AudioManager.sfx_level_up()
 		log_message.emit("Subiu para o nível %d! Skill points: %d" % [player_level, skill_points])
 
 
