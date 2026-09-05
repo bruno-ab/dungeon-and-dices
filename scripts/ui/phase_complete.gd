@@ -4,6 +4,9 @@ extends Control
 func _ready() -> void:
 	AudioManager.play_bgm("Theme3")
 	AudioManager.me_fanfare()
+	RtpUi.apply_window_panel($Center/Panel)
+	RtpUi.apply_button_styles(%MenuBtn)
+	RtpUi.apply_button_styles($Center/Panel/Margin/VBox/VillageBtn)
 	%Title.text = "Fase concluída"
 	%Body.text = (
 		"A Vila de Cinzas respira de novo.\n"
