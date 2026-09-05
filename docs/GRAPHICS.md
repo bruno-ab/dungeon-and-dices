@@ -21,6 +21,20 @@ Agora o combate usa frames de overworld (`terra` / `mira` / `magus`) e retratos 
 - `assets/sprites/characters/Pixel_Champions_v3` — sheets; usar **só com AtlasTexture** (3×3 de 96×64)
 - Battlebacks em `assets/sprites/...` / encounter meta
 
+## Retratos de diálogo (placeholders RTP)
+
+Fonte: `assets/sprites/rtp/Graphics/Faces` (sheets 384×192 → 4×2 faces de 96×96).
+
+| Personagem | Sheet | Índice |
+|------------|-------|--------|
+| Otto | Actor1 | 0 |
+| Mira | Actor3 | 1 |
+| Magus | Spiritual | 0 |
+| Estalajadeira | People3 | 2 |
+| Aldeão | People1 | 0 |
+
+Mapeamento em `SpriteCatalog.portrait()` — rostos não precisam coincidir; só placeholder VN.
+
 ## Código
 
 - `scripts/sprites/sprite_catalog.gd` — fonte de frames/retratos

@@ -59,15 +59,17 @@ func close_vn() -> void:
 func _guess_portrait(speaker: String) -> String:
 	match speaker:
 		"Magus":
-			return "kelvin"
+			return "magus"
 		"Mira":
-			return "lyra"
+			return "mira"
 		"Otto", "Gildesh":
 			return "otto"
 		"Estalajadeira":
-			return "campfire"
+			return "innkeeper"
+		"Aldeão", "Aldeao":
+			return "aldeao"
 		_:
-			return "terra"
+			return "otto"
 
 
 func _set_portrait(id: String) -> void:

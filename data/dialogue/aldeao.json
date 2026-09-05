@@ -1,6 +1,6 @@
 {
   "id": "aldeao",
-  "portrait": "terra",
+  "portrait": "aldeao",
   "speaker": "Aldeão",
   "default_start": "hub",
   "start_rules": [

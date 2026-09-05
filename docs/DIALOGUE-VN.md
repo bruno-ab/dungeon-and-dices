@@ -11,6 +11,13 @@ NPCs usam scripts JSON em `data/dialogue/`. A UI (`dialogue_box`) mostra:
 
 Autoload: `DialogueManager`
 
+## Retratos
+
+Placeholders de `assets/sprites/rtp/Graphics/Faces` via `SpriteCatalog.portrait()`  
+(Otto→Actor1, Mira→Actor3, Magus→Spiritual, Estalajadeira→People3, Aldeão→People1).
+
+Campo `"portrait"` no JSON do diálogo (ex.: `"magus"`, `"mira"`).
+
 ## Abrir (código)
 
 ```gdscript

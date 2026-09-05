@@ -1,6 +1,6 @@
 {
   "id": "magus",
-  "portrait": "kelvin",
+  "portrait": "magus",
   "speaker": "Magus",
   "default_start": "hub",
   "start_rules": [
@@ -10,7 +10,7 @@
   "nodes": {
     "intro": {
       "speaker": "Magus",
-      "portrait": "kelvin",
+      "portrait": "magus",
       "text": "Forasteiro… bem-vindo à [color=#e8c56a]Vila de Cinzas[/color], na fronteira de Vasta.",
       "next": "intro_2"
     },

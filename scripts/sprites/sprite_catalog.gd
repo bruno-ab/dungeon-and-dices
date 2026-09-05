@@ -147,21 +147,92 @@ static func frames_for(key: String) -> SpriteFrames:
 
 
 static func portrait(id: String) -> Texture2D:
-	var resolved := id
-	if id == "warrior" or id == "hero" or id == "gildesh" or id == "terra" or id == "otto":
-		resolved = "terra" if ResourceLoader.exists("res://assets/sprites/portraits/terra.png") else "otto"
-	elif id == "ancião" or id == "anciao" or id == "elder" or id == "magus" or id == "kelvin":
-		resolved = "magus" if ResourceLoader.exists("res://assets/sprites/portraits/magus.png") else "kelvin"
-	elif id == "mira" or id == "lyra":
-		resolved = "mira" if ResourceLoader.exists("res://assets/sprites/portraits/mira.png") else "lyra"
-	var path := "res://assets/sprites/portraits/%s.png" % resolved
+	## Preferência: Faces RTP (placeholders). Fallback: portraits/ locais.
+	var key := _normalize_portrait_id(id)
+	var face := _rtp_face_for(key)
+	if face != null:
+		return face
+	var path := "res://assets/sprites/portraits/%s.png" % key
 	if ResourceLoader.exists(path):
 		return _portrait_texture(load(path) as Texture2D)
 	for fallback in ["terra", "magus", "mira", "otto"]:
 		var p := "res://assets/sprites/portraits/%s.png" % fallback
 		if ResourceLoader.exists(p):
 			return _portrait_texture(load(p) as Texture2D)
-	return null
+	## último recurso: qualquer Face RTP
+	return _rtp_face_atlas("People1", 0)
+
+
+## RPG Maker Face sheets 384×192 = 4×2 células de 96×96 (índice 0–7).
+const FACE_DIR := "res://assets/sprites/rtp/Graphics/Faces"
+const FACE_COLS := 4
+const FACE_ROWS := 2
+
+
+static func _normalize_portrait_id(id: String) -> String:
+	var s := id.strip_edges().to_lower()
+	match s:
+		"warrior", "hero", "gildesh", "terra", "otto", "player":
+			return "otto"
+		"kelvin", "magus", "elder", "ancião", "anciao":
+			return "magus"
+		"lyra", "mira":
+			return "mira"
+		"campfire", "innkeeper", "estalajadeira", "estalagem":
+			return "innkeeper"
+		"aldeao", "aldeão", "villager", "npc":
+			return "aldeao"
+		"slime", "lodo":
+			return "slime"
+		"shade", "sombra":
+			return "shade"
+		_:
+			return s if s != "" else "otto"
+
+
+static func _rtp_face_for(key: String) -> Texture2D:
+	## Mapa placeholder (rostos não precisam coincidir com o personagem).
+	var sheet := "Actor1"
+	var index := 0
+	match key:
+		"otto":
+			sheet = "Actor1"
+			index = 0 ## jovem / guerreiro
+		"mira":
+			sheet = "Actor3"
+			index = 1 ## druida placeholder
+		"magus":
+			sheet = "Spiritual"
+			index = 0 ## arcano / sentinela
+		"innkeeper":
+			sheet = "People3"
+			index = 2 ## estalajadeira
+		"aldeao":
+			sheet = "People1"
+			index = 0 ## aldeão
+		"slime":
+			sheet = "Monster1"
+			index = 0
+		"shade":
+			sheet = "Evil"
+			index = 1
+		_:
+			sheet = "People2"
+			index = 0
+	return _rtp_face_atlas(sheet, index)
+
+
+static func _rtp_face_atlas(sheet_name: String, index: int) -> Texture2D:
+	var path := "%s/%s.png" % [FACE_DIR, sheet_name]
+	if not ResourceLoader.exists(path):
+		return null
+	var sheet := load(path) as Texture2D
+	if sheet == null:
+		return null
+	var i := clampi(index, 0, FACE_COLS * FACE_ROWS - 1)
+	var col := i % FACE_COLS
+	var row := int(i / FACE_COLS)
+	return _atlas_cell(sheet, col, row, FACE_COLS, FACE_ROWS)
 
 
 ## Sheets Pixel Champions / RMMV: 288×192 = grade 3×3 (96×64). Sem fatiar vira o "grid" na tela.

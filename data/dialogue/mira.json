@@ -1,6 +1,6 @@
 {
   "id": "mira",
-  "portrait": "lyra",
+  "portrait": "mira",
   "speaker": "Mira",
   "default_start": "hub",
   "start_rules": [

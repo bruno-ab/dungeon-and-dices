@@ -1,6 +1,6 @@
 {
   "id": "innkeeper",
-  "portrait": "campfire",
+  "portrait": "innkeeper",
   "speaker": "Estalajadeira",
   "default_start": "hub",
   "nodes": {
