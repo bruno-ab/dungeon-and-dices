@@ -1,24 +1,7 @@
-# Sprites
+﻿# sprites/
 
-## Herói — Terra (`terra/`)
+Pastas ativas do jogo: `battlers/`, `battlebacks/`, `enemies/`, `portraits/`, `magus/`, `mira/`, `terra/`, `slime/`, `shade/`, `campfire/`.
 
-Pack usado pelo personagem jogável (Gildesh).
+Vendor (fonte): `characters/`, `Monster Pack 1/`, `rtp/`, `FREE Mana Seed...`.
 
-- GIFs originais em `terra/*.gif`
-- Frames PNG em `terra/frames/` (idle/walk 3 direções, battle, cast, etc.)
-
-```bash
-python scripts/tools/extract_terra_frames.py
-```
-
-`SpriteCatalog.terra()` monta as animações no Godot.
-
-## Outros
-
-| Personagem | Pasta |
-|---|---|
-| Mira | `mira/` |
-| Lodo | `slime/` |
-| Sombra | `shade/` |
-| Fogueira | `campfire/` |
-| Gildesh gerado (legado) | `gildesh/` |
+Ver `docs/ASSETS.md`.

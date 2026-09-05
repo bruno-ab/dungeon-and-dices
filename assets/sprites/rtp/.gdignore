@@ -1,0 +1,2 @@
+# Pacotes vendor volumosos — o editor ainda pode importar sob demanda via paths explícitos.
+# Evita varrer RTP inteiro em cada reimport se o Godot respeitar gdignore em subpastas.

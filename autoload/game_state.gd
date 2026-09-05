@@ -1,6 +1,6 @@
 extends Node
 
-## Estado da run + progresso da Fase 1 (Vila de Cinzas).
+## Estado da run — Vila de Cinzas / Mittelerd (lore Pot).
 
 signal party_changed
 signal xp_gained(amount: int, new_level: int)
@@ -8,43 +8,55 @@ signal skill_points_changed(points: int)
 signal log_message(text: String)
 signal quest_updated(text: String)
 
-var player_name: String = "Gildesh"
+var player_name: String = "Otto"
 var player_level: int = 1
 var player_xp: int = 0
 var skill_points: int = 0
-var max_hp: int = 40
-var current_hp: int = 40
+var max_hp: int = 42
+var current_hp: int = 42
 var dice_count: int = 1
 var dice_sides: int = 10
 var parry_window_bonus: float = 0.0
 var recruited_mira: bool = false
+var recruited_magus: bool = false
 var battles_won: int = 0
 var last_battle_result: String = ""
+var pending_encounter: String = "trilha"
 
-## Fase 1
+## Progresso
 var phase: int = 1
 var met_elder: bool = false
 var phase1_trail_cleared: bool = false
+var cleared_mylune: bool = false
+var cleared_trilha: bool = false
+var cleared_cemiterio: bool = false
 var spawn_point: String = "plaza"
 
 const XP_PER_LEVEL := 20
+const GAME_TITLE := "Dado & Lâmina"
 
 
 func reset_run() -> void:
+	player_name = "Otto"
 	player_level = 1
 	player_xp = 0
 	skill_points = 0
-	max_hp = 40
-	current_hp = 40
+	max_hp = 42
+	current_hp = 42
 	dice_count = 1
 	dice_sides = 10
 	parry_window_bonus = 0.0
 	recruited_mira = false
+	recruited_magus = false
 	battles_won = 0
 	last_battle_result = ""
+	pending_encounter = "trilha"
 	phase = 1
 	met_elder = false
 	phase1_trail_cleared = false
+	cleared_mylune = false
+	cleared_trilha = false
+	cleared_cemiterio = false
 	spawn_point = "plaza"
 	party_changed.emit()
 	quest_updated.emit(quest_text())
@@ -97,20 +109,33 @@ func spend_skill_extra_die() -> bool:
 
 
 func party_summary() -> String:
-	var party := player_name
+	var party := "%s (Guerreiro)" % player_name
 	if recruited_mira:
-		party += " + Mira"
+		party += " · Mira (Druida)"
+	if recruited_magus:
+		party += " · Magus (Mago)"
 	return party
 
 
 func quest_text() -> String:
-	if phase1_trail_cleared:
-		return "Fase 1 concluída — fale com Magus na praça."
+	if cleared_cemiterio:
+		return "Os três caminhos foram limpos. Fale com Magus na praça."
 	if not met_elder:
 		return "Objetivo: fale com Magus na praça da Vila de Cinzas."
+	var parts: PackedStringArray = []
 	if not recruited_mira:
-		return "Objetivo: recrute Mira (opcional) e limpe a Trilha Sombria a leste."
-	return "Objetivo: limpe a Trilha Sombria a leste da vila."
+		parts.append("recrute Mira")
+	if not recruited_magus:
+		parts.append("recrute Magus para a party")
+	if not cleared_mylune:
+		parts.append("limpe Mylune (oeste)")
+	if not cleared_trilha:
+		parts.append("limpe a Trilha Sombria (leste)")
+	if not cleared_cemiterio:
+		parts.append("derrote o Golem no Cemitério (norte)")
+	if parts.is_empty():
+		return "Fale com Magus para encerrar a fase."
+	return "Objetivo: " + ", ".join(parts) + "."
 
 
 func mark_met_elder() -> void:
@@ -119,6 +144,27 @@ func mark_met_elder() -> void:
 
 
 func mark_trail_cleared() -> void:
+	## Compat legado
+	cleared_trilha = true
 	phase1_trail_cleared = true
 	quest_updated.emit(quest_text())
 	log_message.emit("A Trilha Sombria foi limpa.")
+
+
+func mark_encounter_cleared(id: String) -> void:
+	match id:
+		"mylune":
+			cleared_mylune = true
+			log_message.emit("Mylune está calma — por agora.")
+		"trilha":
+			mark_trail_cleared()
+			return
+		"cemiterio":
+			cleared_cemiterio = true
+			phase1_trail_cleared = true
+			log_message.emit("O Golem caiu no Cemitério dos Metais.")
+	quest_updated.emit(quest_text())
+
+
+func all_encounters_cleared() -> bool:
+	return cleared_mylune and cleared_trilha and cleared_cemiterio

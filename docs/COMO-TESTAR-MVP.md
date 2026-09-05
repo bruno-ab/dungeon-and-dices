@@ -1,45 +1,44 @@
-# Como jogar a Fase 1 (Godot 4.7.2)
+# Como jogar — Dado & Lâmina (Godot 4.7)
 
 ## Abrir
 
-1. Godot **4.7.2** → Import → pasta do projeto
-2. **F5** (cena `scenes/main.tscn`)
+1. Godot **4.7.2** → Import → pasta do projeto  
+2. **F5** (`scenes/main.tscn`)
 
 ## Fluxo
 
 ```
 Menu (Start Game)
-   → Vila de Cinzas
-      → Magus (missão)
-      → Estalagem (cura)
-      → Mira (recruta, opcional)
-      → Trilha Sombria (combate reativo)
-   → Volta à vila
-   → Magus (encerra Fase 1)
+  → Vila de Cinzas (Mittelerd / lore Pot)
+       → Magus (missão + recruta Mago)
+       → Mira (recruta Druida)
+       → Estalagem (cura)
+       → Mylune (oeste) — Guard/Dodge/Counter
+       → Trilha Sombria (leste) — Counterspell
+       → Cemitério dos Metais (norte) — combate misto
+  → Magus encerra a fase após os 3 combates
 ```
 
-## Controles
+## Classes
 
-| Onde | Teclas |
-|---|---|
-| Menu | Enter / clique em **Start Game** |
-| Vila | **WASD** andar · **E** falar |
-| Combate | botões de ação · **Espaço/J/K** reagir |
-| Skills | **1** Parry maior · **2** +1 dado |
-| Pause | **Esc** |
+| Classe | Personagem | Dado | Destaque |
+|--------|------------|------|----------|
+| Guerreiro | Otto | d10 | Lâmina Severa, Guard |
+| Druida | Mira | d6 | Magia / Semente |
+| Mago | Magus | d8 / janela d4 | Contra-feitiço |
 
-## Objetivo da Fase 1
+## Controles (combate)
 
-1. Falar com **Magus** na praça  
-2. (Opcional) Recrutar **Mira** no poço  
-3. Entrar na **Trilha Sombria** e vencer o combate  
-4. Voltar e falar com Magus → tela de conclusão  
+| Ação | Tecla / UI |
+|------|------------|
+| Habilidade | botão central |
+| Magia / Item | botões |
+| Guardar | **G** ou botão (turno ou reação) |
+| Esquivar | **H** |
+| Contra-atacar | **J** |
+| Contra-feitiço | **U** |
+| Timing genérico | **Espaço** |
 
-## Sistemas ativos
+## Lore
 
-- Exploração top-down (`CharacterBody2D` + colisão com prédios)
-- Diálogos (UI pausa a árvore)
-- Dice Engine + turnos + Dodge/Parry/Perfect
-- Progressão XP / skill points
-- Recrutamento dinâmico
-- NPC Magus com spritesheet (`assets/sprites/magus/`)
+Ver `docs/lore-mittelerd.md` (adaptado do projeto Pot).

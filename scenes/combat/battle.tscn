@@ -12,14 +12,26 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ui")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Battleback" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.06, 0.07, 0.1, 1)
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(0.7, 0.72, 0.8, 1)
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.05, 0.08, 0.35)
+mouse_filter = 2
 
 [node name="BattleController" type="Node" parent="."]
 script = ExtResource("2_battle")
@@ -32,104 +44,181 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="UI"]
+[node name="TopBar" type="HBoxContainer" parent="UI"]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 16.0
-offset_right = 520.0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 1264.0
 offset_bottom = 48.0
-theme_override_font_sizes/font_size = 28
-text = "Combate — Turnos Reativos"
-
-[node name="Status" type="Label" parent="UI"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 52.0
-offset_right = 700.0
-offset_bottom = 80.0
-text = "Status"
-
-[node name="Portraits" type="HBoxContainer" parent="UI"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 96.0
-offset_right = 1240.0
-offset_bottom = 180.0
-theme_override_constants/separation = 12
-
-[node name="Stage" type="HBoxContainer" parent="UI"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 190.0
-offset_right = 1240.0
-offset_bottom = 300.0
 theme_override_constants/separation = 16
-alignment = 1
 
-[node name="Log" type="RichTextLabel" parent="UI"]
+[node name="TimelineRow" type="HBoxContainer" parent="UI/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UI/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.86, 0.65, 1)
+theme_override_font_sizes/font_size = 22
+text = "Dado & Lâmina"
+horizontal_alignment = 2
+
+[node name="Stage" type="Control" parent="UI"]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 310.0
-offset_right = 820.0
-offset_bottom = 520.0
-bbcode_enabled = true
-scroll_following = true
+offset_left = 0.0
+offset_top = 52.0
+offset_right = 1280.0
+offset_bottom = 360.0
 
 [node name="ReactionHint" type="Label" parent="UI"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 530.0
-offset_right = 820.0
-offset_bottom = 560.0
+offset_top = 330.0
+offset_right = 900.0
+offset_bottom = 356.0
 theme_override_colors/font_color = Color(0.95, 0.8, 0.4, 1)
 text = "REAÇÃO"
 
 [node name="ReactionBar" type="ProgressBar" parent="UI"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 565.0
-offset_right = 820.0
-offset_bottom = 590.0
+offset_top = 358.0
+offset_right = 700.0
+offset_bottom = 378.0
 show_percentage = false
 
-[node name="Actions" type="VBoxContainer" parent="UI"]
+[node name="Dashboard" type="PanelContainer" parent="UI"]
 layout_mode = 0
-offset_left = 880.0
-offset_top = 200.0
-offset_right = 1240.0
-offset_bottom = 420.0
+offset_left = 12.0
+offset_top = 385.0
+offset_right = 1268.0
+offset_bottom = 708.0
+
+[node name="Margin" type="MarginContainer" parent="UI/Dashboard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="UI/Dashboard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="EnvStrip" type="Label" parent="UI/Dashboard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.85, 1)
+theme_override_font_sizes/font_size = 13
+text = "FOGO: d8, TERRA: d10, GELO: d6 | TURNO 1"
+
+[node name="DashRow" type="HBoxContainer" parent="UI/Dashboard/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="LeftCol" type="VBoxContainer" parent="UI/Dashboard/Margin/VBox/DashRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 0)
+theme_override_constants/separation = 6
+
+[node name="ActionsTitle" type="Label" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.82, 0.55, 1)
+text = "AÇÕES DE BATALHA"
+
+[node name="ClassLabel" type="Label" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "GUERREIRO"
+
+[node name="ReactRow" type="GridContainer" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol"]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+columns = 2
+
+[node name="Guard" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol/ReactRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 40)
+text = "GUARDAR (d6)"
+
+[node name="Dodge" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol/ReactRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 40)
+text = "ESQUIVAR (d8)"
+
+[node name="Counter" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol/ReactRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 40)
+text = "CONTRA (d6)"
+
+[node name="Counterspell" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/LeftCol/ReactRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(130, 40)
+text = "C-FEITIÇO (d4)"
+
+[node name="CenterCol" type="VBoxContainer" parent="UI/Dashboard/Margin/VBox/DashRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SkillName" type="Label" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 22
+text = "[LÂMINA SEVERA]"
+horizontal_alignment = 1
+
+[node name="SkillFormula" type="Label" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 16
+text = "d10 + 7"
+horizontal_alignment = 1
+
+[node name="AttackBtn" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "Usar habilidade no alvo"
+
+[node name="Targets" type="HBoxContainer" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="SubRow" type="HBoxContainer" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol"]
+layout_mode = 2
+alignment = 1
 theme_override_constants/separation = 10
 
-[node name="AttackA" type="Button" parent="UI/Actions"]
+[node name="Magic" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol/SubRow"]
 layout_mode = 2
-text = "Atacar Lodo Sombrio (dados)"
+custom_minimum_size = Vector2(100, 34)
+text = "MAGIA"
 
-[node name="AttackB" type="Button" parent="UI/Actions"]
+[node name="Item" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol/SubRow"]
 layout_mode = 2
-text = "Atacar Sombra (dados)"
+custom_minimum_size = Vector2(100, 34)
+text = "ITEM"
 
-[node name="Guard" type="Button" parent="UI/Actions"]
+[node name="Flee" type="Button" parent="UI/Dashboard/Margin/VBox/DashRow/CenterCol/SubRow"]
 layout_mode = 2
-text = "Preparar (+2 HP)"
+custom_minimum_size = Vector2(100, 34)
+text = "Fugir"
 
-[node name="Flee" type="Button" parent="UI/Actions"]
+[node name="PartyCol" type="VBoxContainer" parent="UI/Dashboard/Margin/VBox/DashRow"]
 layout_mode = 2
-text = "Fugir (volta ao hub, -3 HP)"
+custom_minimum_size = Vector2(300, 0)
+theme_override_constants/separation = 6
 
-[node name="Help" type="Label" parent="UI"]
-layout_mode = 0
-offset_left = 880.0
-offset_top = 440.0
-offset_right = 1240.0
-offset_bottom = 560.0
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
-text = "Quando o inimigo atacar, a barra sobe.
-Espaço / J / K:
-• cedo = Parry / Perfect
-• no pico = Dodge
-• fora = MISS"
-autowrap_mode = 3
+[node name="LogBar" type="RichTextLabel" parent="UI/Dashboard/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 52)
+bbcode_enabled = true
+scroll_following = true
+text = "ROLANDO DADOS…"
 
 [node name="EndPanel" type="PanelContainer" parent="UI"]
 visible = false
@@ -139,10 +228,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -80.0
-offset_right = 180.0
-offset_bottom = 80.0
+offset_left = -200.0
+offset_top = -90.0
+offset_right = 200.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -154,7 +243,8 @@ theme_override_constants/separation = 12
 layout_mode = 2
 text = "Fim"
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="ReturnBtn" type="Button" parent="UI/EndPanel/VBox"]
 layout_mode = 2
-text = "Voltar ao hub"
+text = "Voltar à Vila"

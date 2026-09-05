@@ -235,6 +235,7 @@ script = ExtResource("4_npc")
 prompt_text = "E — Entrar na Trilha Sombria"
 mode = "battle"
 speaker_name = "Trilha"
+encounter_id = "trilha"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/TrailGate"]
 scale = Vector2(1.8, 1.8)
@@ -250,6 +251,40 @@ catalog_id = "shade"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/TrailGate"]
 shape = SubResource("RectangleShape2D_npc")
 
+[node name="MyluneGate" type="Area2D" parent="World/NPCs"]
+position = Vector2(80, 520)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Entrar em Mylune"
+mode = "battle"
+speaker_name = "Mylune"
+encounter_id = "mylune"
+
+[node name="Sprite" type="Polygon2D" parent="World/NPCs/MyluneGate"]
+color = Color(0.25, 0.55, 0.3, 1)
+polygon = PackedVector2Array(-18, -22, 18, -22, 18, 22, -18, 22)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/MyluneGate"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="CemiterioGate" type="Area2D" parent="World/NPCs"]
+position = Vector2(820, 120)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_npc")
+prompt_text = "E — Cemitério dos Metais"
+mode = "battle"
+speaker_name = "Cemitério"
+encounter_id = "cemiterio"
+
+[node name="Sprite" type="Polygon2D" parent="World/NPCs/CemiterioGate"]
+color = Color(0.45, 0.25, 0.28, 1)
+polygon = PackedVector2Array(-20, -24, 20, -24, 20, 24, -20, 24)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/CemiterioGate"]
+shape = SubResource("RectangleShape2D_npc")
+
 [node name="SignTrail" type="Label" parent="World"]
 offset_left = 1380.0
 offset_top = 430.0
@@ -257,6 +292,24 @@ offset_right = 1580.0
 offset_bottom = 470.0
 theme_override_font_sizes/font_size = 18
 text = "→ Trilha Sombria"
+horizontal_alignment = 1
+
+[node name="SignMylune" type="Label" parent="World"]
+offset_left = 20.0
+offset_top = 430.0
+offset_right = 220.0
+offset_bottom = 470.0
+theme_override_font_sizes/font_size = 18
+text = "← Floresta de Mylune"
+horizontal_alignment = 1
+
+[node name="SignCemiterio" type="Label" parent="World"]
+offset_left = 700.0
+offset_top = 40.0
+offset_right = 980.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 18
+text = "↑ Cemitério dos Metais"
 horizontal_alignment = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

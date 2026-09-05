@@ -3,9 +3,10 @@ extends Area2D
 ## NPC / ponto de interação com diálogo ou ação.
 
 @export var prompt_text: String = "E — Falar"
-@export_enum("dialogue", "recruit", "heal", "battle", "elder", "complete") var mode: String = "dialogue"
+@export_enum("dialogue", "recruit", "recruit_magus", "heal", "battle", "elder", "complete") var mode: String = "dialogue"
 @export var speaker_name: String = "Aldeão"
 @export var dialogue_lines: PackedStringArray = PackedStringArray(["..."])
+@export var encounter_id: String = "trilha"
 
 var _player_inside: bool = false
 var _busy: bool = false
@@ -46,54 +47,99 @@ func _activate() -> void:
 			_talk(speaker_name, dialogue_lines)
 		"recruit":
 			if GameState.recruited_mira:
-				_talk("Mira", PackedStringArray(["Já estou com você. Vamos limpar a trilha."]))
+				_talk("Mira", PackedStringArray(["Já estou com você. Os dados da terra respondem."]))
 			else:
 				GameState.recruited_mira = true
 				GameState.party_changed.emit()
 				GameState.quest_updated.emit(GameState.quest_text())
 				_talk("Mira", PackedStringArray([
-					"Ouvi o Magus. Posso lutar ao seu lado.",
-					"Meu dado é um d8 — mais ágil que forte.",
-					"Mira entrou no grupo!",
+					"Ouvi Magus. Posso lutar ao seu lado.",
+					"Sou druida — meu dado é d6. Forma e cura clandestina.",
+					"Mira entrou no grupo! (classe Druida)",
 				]))
+		"recruit_magus":
+			_recruit_magus()
 		"battle":
-			if GameState.phase1_trail_cleared:
-				_talk("Trilha", PackedStringArray(["A trilha está calma por enquanto."]))
-			else:
-				SceneRouter.go_battle()
+			_start_battle()
 		"elder":
 			_elder()
 		"complete":
-			if GameState.phase1_trail_cleared:
+			if GameState.all_encounters_cleared():
 				SceneRouter.go_phase_complete()
 			else:
-				_talk(speaker_name, PackedStringArray(["Ainda há sombras na trilha a leste."]))
+				_talk(speaker_name, PackedStringArray(["Ainda há caminhos perigosos ao redor da vila."]))
 		_:
 			_talk(speaker_name, dialogue_lines)
 
 
+func _start_battle() -> void:
+	var id := encounter_id if encounter_id != "" else "trilha"
+	if id == "mylune" and GameState.cleared_mylune:
+		_talk("Trilha", PackedStringArray(["Mylune está quieta. As serpentes sumiram."]))
+		return
+	if id == "trilha" and GameState.cleared_trilha:
+		_talk("Trilha", PackedStringArray(["A trilha está calma por enquanto."]))
+		return
+	if id == "cemiterio" and GameState.cleared_cemiterio:
+		_talk("Ruínas", PackedStringArray(["O golem jaz entre as sucatas."]))
+		return
+	if not GameState.met_elder:
+		_talk("?", PackedStringArray(["Fale com Magus na praça antes de partir."]))
+		return
+	SceneRouter.go_battle(id)
+
+
+func _recruit_magus() -> void:
+	if GameState.recruited_magus:
+		_talk("Magus", PackedStringArray(["Estou no grupo. Meu Contra-feitiço é d4 — timing curto."]))
+		return
+	if not GameState.met_elder:
+		_elder()
+		return
+	GameState.recruited_magus = true
+	GameState.party_changed.emit()
+	GameState.quest_updated.emit(GameState.quest_text())
+	_talk("Magus", PackedStringArray([
+		"Levarei o Arcano à batalha — em silêncio, longe dos olhos de Vasta.",
+		"Classe Mago: Magia e Contra-feitiço. Dados d8 / janela d4.",
+		"Magus entrou no grupo!",
+	]))
+
+
 func _elder() -> void:
 	var name := speaker_name if speaker_name != "" else "Magus"
-	if GameState.phase1_trail_cleared:
+	if GameState.all_encounters_cleared():
 		_talk(name, PackedStringArray([
-			"Você afastou as sombras. A Vila de Cinzas respira de novo.",
-			"Isso conclui a primeira fase da sua jornada.",
+			"Mylune, a Trilha e o Cemitério… três feridas fechadas.",
+			"A Rainha disse: em cinzas os que colhem o que não plantaram.",
+			"Vocês plantaram esperança. Isso conclui esta fase.",
 		]), func(): SceneRouter.go_phase_complete())
 		return
 	if not GameState.met_elder:
 		GameState.mark_met_elder()
 		_talk(name, PackedStringArray([
-			"Forasteiro… bem-vindo à Vila de Cinzas.",
-			"Sou Magus. Guardo o que resta de nossa magia antiga.",
-			"Sombras tomaram a Trilha a leste. Ninguém volta inteiro.",
-			"Recrute Mira perto do poço, se quiser companhia.",
-			"Descanse na estalagem ao norte. Depois, limpe a trilha.",
+			"Forasteiro… bem-vindo à Vila de Cinzas, na fronteira de Vasta.",
+			"Sou Magus. Fui Sentinela — hoje guardo o que resta do Arcano livre.",
+			"Três caminhos sangram: Mylune a oeste, a Trilha a leste, o Cemitério ao norte.",
+			"Recrute Mira (druida) no poço. Fale comigo de novo se quiser meu poder em combate.",
+			"Otto… a Marreta de Vasta ainda ecoa em você. Use os dados com juízo.",
 		]))
-	else:
+		return
+	if not GameState.recruited_magus:
+		GameState.recruited_magus = true
+		GameState.party_changed.emit()
+		GameState.quest_updated.emit(GameState.quest_text())
 		_talk(name, PackedStringArray([
-			"Ainda esperamos notícias da Trilha Sombria.",
+			"Levarei o Arcano à batalha — longe dos olhos de Vasta.",
+			"Classe Mago: Magia e Contra-feitiço. Dados d8 / janela d4.",
+			"Magus entrou no grupo!",
 			GameState.quest_text(),
 		]))
+		return
+	_talk(name, PackedStringArray([
+		GameState.quest_text(),
+		"Party: %s" % GameState.party_summary(),
+	]))
 
 
 func _talk(speaker: String, lines: PackedStringArray, on_finished: Callable = Callable()) -> void:

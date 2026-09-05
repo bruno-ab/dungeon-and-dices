@@ -91,20 +91,105 @@ static func campfire() -> SpriteFrames:
 	return sf
 
 
+static func otto() -> SpriteFrames:
+	return _battler("otto")
+
+
+static func lyra() -> SpriteFrames:
+	return _battler("lyra")
+
+
+static func kelvin() -> SpriteFrames:
+	return _battler("kelvin")
+
+
+static func serpent_green() -> SpriteFrames:
+	return _single("res://assets/sprites/enemies/serpent/serpent_green.png")
+
+
+static func serpent_purple() -> SpriteFrames:
+	return _single("res://assets/sprites/enemies/serpent/serpent_purple.png")
+
+
+static func golem_corrupt() -> SpriteFrames:
+	return _single("res://assets/sprites/enemies/golem/golem_corrupt.png")
+
+
+static func trolling() -> SpriteFrames:
+	return _single("res://assets/sprites/enemies/trolling/trolling_brute.png")
+
+
+static func frames_for(key: String) -> SpriteFrames:
+	match key:
+		"terra", "gildesh", "warrior", "hero":
+			return terra()
+		"otto":
+			return otto()
+		"lyra", "mira":
+			# prefer battler; fallback mira idle
+			var b := lyra()
+			if b.get_frame_count(&"idle") > 0:
+				return b
+			return mira()
+		"kelvin", "magus":
+			var b2 := kelvin()
+			if b2.get_frame_count(&"idle") > 0:
+				return b2
+			return magus()
+		"slime":
+			return slime()
+		"shade":
+			return shade()
+		"serpent_green":
+			return serpent_green()
+		"serpent_purple":
+			return serpent_purple()
+		"golem_corrupt":
+			return golem_corrupt()
+		"trolling":
+			return trolling()
+		"campfire":
+			return campfire()
+		_:
+			return terra()
+
+
 static func portrait(id: String) -> Texture2D:
 	var resolved := id
-	if id == "warrior" or id == "hero" or id == "gildesh":
-		resolved = "terra"
-	elif id == "ancião" or id == "anciao" or id == "elder":
-		resolved = "magus"
+	if id == "warrior" or id == "hero" or id == "gildesh" or id == "terra":
+		resolved = "otto" if ResourceLoader.exists("res://assets/sprites/portraits/otto.png") else "terra"
+	elif id == "ancião" or id == "anciao" or id == "elder" or id == "magus":
+		resolved = "kelvin" if ResourceLoader.exists("res://assets/sprites/portraits/kelvin.png") else "magus"
+	elif id == "mira":
+		resolved = "lyra" if ResourceLoader.exists("res://assets/sprites/portraits/lyra.png") else "mira"
 	var path := "res://assets/sprites/portraits/%s.png" % resolved
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
-	for fallback in ["terra", "gildesh", "warrior"]:
+	for fallback in ["otto", "terra", "magus", "mira"]:
 		var p := "res://assets/sprites/portraits/%s.png" % fallback
 		if ResourceLoader.exists(p):
 			return load(p) as Texture2D
 	return null
+
+
+static func _battler(who: String) -> SpriteFrames:
+	var sf := SpriteFrames.new()
+	_add_anim(sf, &"idle", 2.0, [
+		"res://assets/sprites/battlers/%s/%s_battle.png" % [who, who],
+		"res://assets/sprites/battlers/%s/%s_battle_2.png" % [who, who],
+	])
+	_add_anim(sf, &"battle", 2.0, [
+		"res://assets/sprites/battlers/%s/%s_battle.png" % [who, who],
+		"res://assets/sprites/battlers/%s/%s_battle_2.png" % [who, who],
+	])
+	return sf
+
+
+static func _single(path: String) -> SpriteFrames:
+	var sf := SpriteFrames.new()
+	_add_anim(sf, &"idle", 1.0, [path])
+	_add_anim(sf, &"battle", 1.0, [path])
+	return sf
 
 
 static func _seq(folder: String, count: int) -> Array:

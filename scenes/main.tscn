@@ -56,14 +56,15 @@ theme_override_constants/separation = 14
 [node name="Title" type="Label" parent="Center/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Dungeon and Dices"
+theme_override_colors/font_color = Color(0.92, 0.86, 0.65, 1)
+text = "Dado & Lâmina"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Center/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.72, 0.62, 1)
-text = "Fase 1 — Vila de Cinzas
-RPG de turnos reativos · Dice Engine"
+text = "Mittelerd · Vila de Cinzas
+Turnos reativos · Dice Engine · Lore de Pot"
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Center/Panel/Margin/VBox"]
@@ -90,7 +91,8 @@ text = "Sair"
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.55, 0.55, 0.6, 1)
-text = "WASD · E interagir · Espaço/J/K reagir no combate"
+text = "WASD · E interagir · G/H/J/U reagir · Espaço timing"
+
 horizontal_alignment = 1
 autowrap_mode = 3
 

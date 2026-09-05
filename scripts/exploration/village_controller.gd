@@ -36,9 +36,7 @@ func _place_player() -> void:
 func _handle_return_from_battle() -> void:
 	match GameState.last_battle_result:
 		"victory":
-			if not GameState.phase1_trail_cleared:
-				GameState.mark_trail_cleared()
-			_on_log("Você retorna à vila. A trilha ficou mais quieta.")
+			_on_log("Você retorna à Vila de Cinzas. %s" % GameState.quest_text())
 		"defeat":
 			GameState.heal_full()
 			_on_log("Você acordou na estalagem… HP cheio.")
