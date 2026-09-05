@@ -57,10 +57,19 @@ offset_right = 1240.0
 offset_bottom = 180.0
 theme_override_constants/separation = 12
 
+[node name="Stage" type="HBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 190.0
+offset_right = 1240.0
+offset_bottom = 300.0
+theme_override_constants/separation = 16
+alignment = 1
+
 [node name="Log" type="RichTextLabel" parent="UI"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 200.0
+offset_top = 310.0
 offset_right = 820.0
 offset_bottom = 520.0
 bbcode_enabled = true

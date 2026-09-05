@@ -10,9 +10,12 @@ extends Control
 @onready var btn_guard: Button = $UI/Actions/Guard
 @onready var btn_flee: Button = $UI/Actions/Flee
 @onready var portraits: HBoxContainer = $UI/Portraits
+@onready var stage: HBoxContainer = $UI/Stage
 @onready var end_panel: PanelContainer = $UI/EndPanel
 @onready var end_label: Label = $UI/EndPanel/VBox/EndLabel
 @onready var btn_return: Button = $UI/EndPanel/VBox/ReturnBtn
+
+var _stage_sprites: Dictionary = {}
 
 
 func _ready() -> void:
@@ -32,6 +35,7 @@ func _ready() -> void:
 	btn_return.pressed.connect(SceneRouter.go_hub)
 	_set_actions(false)
 	battle.setup_mvp_encounter()
+	_build_stage()
 	_refresh()
 	battle.start()
 
@@ -50,7 +54,6 @@ func _set_actions(enabled: bool) -> void:
 	btn_attack_b.disabled = not enabled
 	btn_guard.disabled = not enabled
 	btn_flee.disabled = not enabled
-	# Desabilita botões se o alvo morreu
 	if enabled:
 		var slime = battle.find_combatant(&"slime")
 		var shade = battle.find_combatant(&"shade")
@@ -58,11 +61,84 @@ func _set_actions(enabled: bool) -> void:
 		btn_attack_b.disabled = shade == null or not shade.is_alive()
 
 
+func _portrait_id(combatant_id: StringName) -> String:
+	match String(combatant_id):
+		"hero":
+			return "warrior"
+		"mira":
+			return "mira"
+		"slime":
+			return "slime"
+		"shade":
+			return "shade"
+		_:
+			return "warrior"
+
+
+func _frames_for(combatant_id: StringName) -> SpriteFrames:
+	match String(combatant_id):
+		"hero":
+			return SpriteCatalog.warrior()
+		"mira":
+			return SpriteCatalog.mira()
+		"slime":
+			return SpriteCatalog.slime()
+		"shade":
+			return SpriteCatalog.shade()
+		_:
+			return SpriteCatalog.warrior()
+
+
+func _build_stage() -> void:
+	for child in stage.get_children():
+		child.queue_free()
+	_stage_sprites.clear()
+	var allies := HBoxContainer.new()
+	allies.add_theme_constant_override("separation", 24)
+	var foes := HBoxContainer.new()
+	foes.add_theme_constant_override("separation", 24)
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(80, 0)
+	for c in battle.combatants:
+		var holder := VBoxContainer.new()
+		var sprite := AnimatedSprite2D.new()
+		sprite.sprite_frames = _frames_for(c.id)
+		sprite.play("idle")
+		sprite.centered = true
+		# AnimatedSprite2D inside Control tree needs a Control wrapper for layout
+		var canvas := Control.new()
+		canvas.custom_minimum_size = Vector2(72, 72)
+		canvas.add_child(sprite)
+		sprite.position = Vector2(36, 40)
+		var tag := Label.new()
+		tag.text = c.display_name
+		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		holder.add_child(canvas)
+		holder.add_child(tag)
+		_stage_sprites[c.id] = sprite
+		if c.is_player_side:
+			allies.add_child(holder)
+		else:
+			foes.add_child(holder)
+	stage.add_child(allies)
+	stage.add_child(spacer)
+	stage.add_child(foes)
+
+
 func _refresh() -> void:
 	for child in portraits.get_children():
 		child.queue_free()
 	for c in battle.combatants:
 		var panel := PanelContainer.new()
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		var tex := TextureRect.new()
+		tex.custom_minimum_size = Vector2(48, 48)
+		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex.texture = SpriteCatalog.portrait(_portrait_id(c.id))
+		if not c.is_alive():
+			tex.modulate = Color(0.4, 0.4, 0.45, 0.7)
 		var vb := VBoxContainer.new()
 		var name_l := Label.new()
 		name_l.text = "%s%s" % [c.display_name, " ★" if c.is_player_side else ""]
@@ -71,12 +147,22 @@ func _refresh() -> void:
 		hp_l.text = "HP %d/%d  SPD %d  %dd%d" % [c.hp, c.max_hp, c.speed, c.dice_count, c.dice_sides]
 		if not c.is_alive():
 			hp_l.text += " (derrotado)"
+			if _stage_sprites.has(c.id):
+				(_stage_sprites[c.id] as AnimatedSprite2D).modulate = Color(0.35, 0.35, 0.4, 0.55)
 		vb.add_child(name_l)
 		vb.add_child(hp_l)
-		panel.add_child(vb)
+		row.add_child(tex)
+		row.add_child(vb)
+		panel.add_child(row)
 		portraits.add_child(panel)
 	if battle.current:
 		status.text = "Fase: %s | Ativo: %s" % [battle.Phase.keys()[battle.phase], battle.current.display_name]
+		for id in _stage_sprites.keys():
+			var spr: AnimatedSprite2D = _stage_sprites[id]
+			if id == battle.current.id:
+				spr.scale = Vector2(1.15, 1.15)
+			else:
+				spr.scale = Vector2.ONE
 	else:
 		status.text = "Preparando…"
 

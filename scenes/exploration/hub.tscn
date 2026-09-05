@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhubscene001"]
+[gd_scene load_steps=7 format=3 uid="uid://bhubscene001"]
 
 [ext_resource type="Script" path="res://scripts/exploration/hub_controller.gd" id="1_hub"]
 [ext_resource type="Script" path="res://scripts/exploration/player_controller.gd" id="2_player"]
 [ext_resource type="Script" path="res://scripts/exploration/interact_zone.gd" id="3_zone"]
+[ext_resource type="Script" path="res://scripts/sprites/catalog_sprite.gd" id="4_sprite"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(28, 28)
@@ -59,18 +60,17 @@ collision_layer = 2
 collision_mask = 5
 script = ExtResource("2_player")
 
-[node name="Body" type="Polygon2D" parent="World/Player"]
-color = Color(0.55, 0.75, 0.95, 1)
-polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="World/Player"]
+scale = Vector2(1.5, 1.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player"]
 shape = SubResource("RectangleShape2D_player")
 
 [node name="Prompt" type="Label" parent="World/Player"]
 offset_left = -80.0
-offset_top = -44.0
+offset_top = -56.0
 offset_right = 120.0
-offset_bottom = -20.0
+offset_bottom = -32.0
 theme_override_font_sizes/font_size = 14
 text = "E — interagir"
 horizontal_alignment = 1
@@ -86,9 +86,10 @@ script = ExtResource("3_zone")
 prompt_text = "E — Descansar (cura total)"
 mode = "heal"
 
-[node name="Visual" type="Polygon2D" parent="World/HealZone"]
-color = Color(0.75, 0.45, 0.25, 0.55)
-polygon = PackedVector2Array(-48, -48, 48, -48, 48, 48, -48, 48)
+[node name="Visual" type="AnimatedSprite2D" parent="World/HealZone"]
+scale = Vector2(1.8, 1.8)
+script = ExtResource("4_sprite")
+catalog_id = "campfire"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/HealZone"]
 shape = SubResource("RectangleShape2D_zone")
@@ -101,9 +102,10 @@ script = ExtResource("3_zone")
 prompt_text = "E — Entrar em combate"
 mode = "battle"
 
-[node name="Visual" type="Polygon2D" parent="World/BattleZone"]
-color = Color(0.55, 0.2, 0.25, 0.65)
-polygon = PackedVector2Array(-48, -48, 48, -48, 48, 48, -48, 48)
+[node name="Visual" type="AnimatedSprite2D" parent="World/BattleZone"]
+scale = Vector2(1.8, 1.8)
+script = ExtResource("4_sprite")
+catalog_id = "slime"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/BattleZone"]
 shape = SubResource("RectangleShape2D_zone")
@@ -116,9 +118,10 @@ script = ExtResource("3_zone")
 prompt_text = "E — Falar com Mira"
 mode = "recruit"
 
-[node name="Visual" type="Polygon2D" parent="World/RecruitZone"]
-color = Color(0.55, 0.35, 0.7, 0.55)
-polygon = PackedVector2Array(-48, -48, 48, -48, 48, 48, -48, 48)
+[node name="Visual" type="AnimatedSprite2D" parent="World/RecruitZone"]
+scale = Vector2(1.8, 1.8)
+script = ExtResource("4_sprite")
+catalog_id = "mira"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/RecruitZone"]
 shape = SubResource("RectangleShape2D_zone")

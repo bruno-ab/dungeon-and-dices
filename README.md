@@ -17,8 +17,9 @@ RPG de turnos 2D (Godot **4.7.2**) — combate reativo, Dice Engine e recrutamen
 
 ```
 autoload/     GameState + SceneRouter
+assets/       sprites pixel art (MVP)
 scenes/       main, hub, battle
-scripts/      combate (dados, turnos, reação) + exploração
+scripts/      combate, exploração, sprites
 docs/         GDD e guia de teste
 .agents/      skills Godot para o agente
 ```
