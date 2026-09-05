@@ -4,7 +4,7 @@ Pixel art 16×16 gerado em código e escalado ×4 (64×64), paleta sóbria.
 
 | Personagem | Pasta | Frames |
 |---|---|---|
-| Guerreiro | `warrior/` | idle + walk (4) |
+| Guerreiro / **Gildesh** | `gildesh/` | idle + walk (4) + back (2) |
 | Mira | `mira/` | idle (2) |
 | Lodo | `slime/` | idle (2) |
 | Sombra | `shade/` | idle (2) |
@@ -15,6 +15,7 @@ Regenerar:
 
 ```bash
 python scripts/tools/generate_sprites.py
+python scripts/tools/generate_gildesh.py
 ```
 
-`SpriteCatalog` (`scripts/sprites/sprite_catalog.gd`) monta `SpriteFrames` em runtime para o Godot.
+Concept de referência: `assets/references/gildesh-concept.png`

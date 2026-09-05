@@ -35,7 +35,7 @@ func setup_mvp_encounter() -> void:
 		GameState.dice_count,
 		GameState.dice_sides,
 		2,
-		Color(0.55, 0.75, 0.95)
+		Color(0.55, 0.42, 0.78)
 	)
 	hero.max_hp = GameState.max_hp
 	hero.hp = clampi(GameState.current_hp, 1, GameState.max_hp)

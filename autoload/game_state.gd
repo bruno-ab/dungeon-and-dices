@@ -8,7 +8,7 @@ signal skill_points_changed(points: int)
 signal log_message(text: String)
 signal quest_updated(text: String)
 
-var player_name: String = "Guerreiro"
+var player_name: String = "Gildesh"
 var player_level: int = 1
 var player_xp: int = 0
 var skill_points: int = 0

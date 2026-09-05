@@ -4,19 +4,24 @@ extends RefCounted
 ## Monta SpriteFrames a partir dos PNGs em assets/sprites.
 
 
-static func warrior() -> SpriteFrames:
+static func gildesh() -> SpriteFrames:
 	var sf := SpriteFrames.new()
 	_add_anim(sf, &"idle", 3.0, [
-		"res://assets/sprites/warrior/warrior_00.png",
-		"res://assets/sprites/warrior/warrior_02.png",
+		"res://assets/sprites/gildesh/gildesh_00.png",
+		"res://assets/sprites/gildesh/gildesh_02.png",
 	])
 	_add_anim(sf, &"walk", 8.0, [
-		"res://assets/sprites/warrior/warrior_00.png",
-		"res://assets/sprites/warrior/warrior_01.png",
-		"res://assets/sprites/warrior/warrior_02.png",
-		"res://assets/sprites/warrior/warrior_03.png",
+		"res://assets/sprites/gildesh/gildesh_00.png",
+		"res://assets/sprites/gildesh/gildesh_01.png",
+		"res://assets/sprites/gildesh/gildesh_02.png",
+		"res://assets/sprites/gildesh/gildesh_03.png",
 	])
 	return sf
+
+
+static func warrior() -> SpriteFrames:
+	## Player principal = Gildesh (concept sheet).
+	return gildesh()
 
 
 static func mira() -> SpriteFrames:
@@ -57,9 +62,16 @@ static func campfire() -> SpriteFrames:
 
 
 static func portrait(id: String) -> Texture2D:
-	var path := "res://assets/sprites/portraits/%s.png" % id
+	var resolved := id
+	if id == "warrior" or id == "hero":
+		resolved = "gildesh"
+	var path := "res://assets/sprites/portraits/%s.png" % resolved
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
+	# fallback
+	var fallback := "res://assets/sprites/portraits/gildesh.png"
+	if ResourceLoader.exists(fallback):
+		return load(fallback) as Texture2D
 	return null
 
 

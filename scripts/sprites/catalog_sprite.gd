@@ -1,13 +1,13 @@
 extends AnimatedSprite2D
 
-@export_enum("warrior", "mira", "slime", "shade", "campfire") var catalog_id: String = "mira"
+@export_enum("gildesh", "warrior", "mira", "slime", "shade", "campfire") var catalog_id: String = "gildesh"
 @export var animation_name: StringName = &"idle"
 
 
 func _ready() -> void:
 	match catalog_id:
-		"warrior":
-			sprite_frames = SpriteCatalog.warrior()
+		"gildesh", "warrior":
+			sprite_frames = SpriteCatalog.gildesh()
 		"mira":
 			sprite_frames = SpriteCatalog.mira()
 		"slime":
@@ -17,6 +17,6 @@ func _ready() -> void:
 		"campfire":
 			sprite_frames = SpriteCatalog.campfire()
 		_:
-			sprite_frames = SpriteCatalog.mira()
+			sprite_frames = SpriteCatalog.gildesh()
 	if sprite_frames and sprite_frames.has_animation(animation_name):
 		play(animation_name)

@@ -64,7 +64,7 @@ func _set_actions(enabled: bool) -> void:
 func _portrait_id(combatant_id: StringName) -> String:
 	match String(combatant_id):
 		"hero":
-			return "warrior"
+			return "gildesh"
 		"mira":
 			return "mira"
 		"slime":
@@ -78,7 +78,7 @@ func _portrait_id(combatant_id: StringName) -> String:
 func _frames_for(combatant_id: StringName) -> SpriteFrames:
 	match String(combatant_id):
 		"hero":
-			return SpriteCatalog.warrior()
+			return SpriteCatalog.gildesh()
 		"mira":
 			return SpriteCatalog.mira()
 		"slime":
@@ -86,7 +86,7 @@ func _frames_for(combatant_id: StringName) -> SpriteFrames:
 		"shade":
 			return SpriteCatalog.shade()
 		_:
-			return SpriteCatalog.warrior()
+			return SpriteCatalog.gildesh()
 
 
 func _build_stage() -> void:
