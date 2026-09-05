@@ -61,24 +61,10 @@ func _set_actions(enabled: bool) -> void:
 		btn_attack_b.disabled = shade == null or not shade.is_alive()
 
 
-func _portrait_id(combatant_id: StringName) -> String:
-	match String(combatant_id):
-		"hero":
-			return "gildesh"
-		"mira":
-			return "mira"
-		"slime":
-			return "slime"
-		"shade":
-			return "shade"
-		_:
-			return "warrior"
-
-
 func _frames_for(combatant_id: StringName) -> SpriteFrames:
 	match String(combatant_id):
 		"hero":
-			return SpriteCatalog.gildesh()
+			return SpriteCatalog.terra()
 		"mira":
 			return SpriteCatalog.mira()
 		"slime":
@@ -86,7 +72,21 @@ func _frames_for(combatant_id: StringName) -> SpriteFrames:
 		"shade":
 			return SpriteCatalog.shade()
 		_:
-			return SpriteCatalog.gildesh()
+			return SpriteCatalog.terra()
+
+
+func _portrait_id(combatant_id: StringName) -> String:
+	match String(combatant_id):
+		"hero":
+			return "terra"
+		"mira":
+			return "mira"
+		"slime":
+			return "slime"
+		"shade":
+			return "shade"
+		_:
+			return "terra"
 
 
 func _build_stage() -> void:
@@ -103,8 +103,12 @@ func _build_stage() -> void:
 		var holder := VBoxContainer.new()
 		var sprite := AnimatedSprite2D.new()
 		sprite.sprite_frames = _frames_for(c.id)
-		sprite.play("idle")
+		if c.id == &"hero" and sprite.sprite_frames.has_animation(&"battle"):
+			sprite.play("battle")
+		else:
+			sprite.play("idle")
 		sprite.centered = true
+		sprite.scale = Vector2(2.2, 2.2) if c.id == &"hero" else Vector2(1.5, 1.5)
 		# AnimatedSprite2D inside Control tree needs a Control wrapper for layout
 		var canvas := Control.new()
 		canvas.custom_minimum_size = Vector2(72, 72)

@@ -1,27 +1,37 @@
 class_name SpriteCatalog
 extends RefCounted
 
-## Monta SpriteFrames a partir dos PNGs em assets/sprites.
+## Monta SpriteFrames a partir dos assets (Terra = herói jogável).
+
+const TERRA := "res://assets/sprites/terra/frames"
 
 
 static func gildesh() -> SpriteFrames:
+	## Herói usa sprites da pasta terra.
+	return terra()
+
+
+static func terra() -> SpriteFrames:
 	var sf := SpriteFrames.new()
-	_add_anim(sf, &"idle", 3.0, [
-		"res://assets/sprites/gildesh/gildesh_00.png",
-		"res://assets/sprites/gildesh/gildesh_02.png",
-	])
-	_add_anim(sf, &"walk", 8.0, [
-		"res://assets/sprites/gildesh/gildesh_00.png",
-		"res://assets/sprites/gildesh/gildesh_01.png",
-		"res://assets/sprites/gildesh/gildesh_02.png",
-		"res://assets/sprites/gildesh/gildesh_03.png",
-	])
+	_add_anim(sf, &"idle_front", 1.0, _seq("%s/idle_front" % TERRA, 1))
+	_add_anim(sf, &"idle_back", 1.0, _seq("%s/idle_back" % TERRA, 1))
+	_add_anim(sf, &"idle_left", 1.0, _seq("%s/idle_left" % TERRA, 1))
+	_add_anim(sf, &"walk_front", 8.0, _seq("%s/walk_front" % TERRA, 4))
+	_add_anim(sf, &"walk_back", 8.0, _seq("%s/walk_back" % TERRA, 4))
+	_add_anim(sf, &"walk_left", 8.0, _seq("%s/walk_left" % TERRA, 4))
+	_add_anim(sf, &"battle", 1.0, _seq("%s/battle" % TERRA, 1))
+	_add_anim(sf, &"cast", 6.0, _seq("%s/cast" % TERRA, 2))
+	_add_anim(sf, &"hit", 1.0, _seq("%s/hit" % TERRA, 1))
+	_add_anim(sf, &"victory", 4.0, _seq("%s/victory" % TERRA, 2))
+	_add_anim(sf, &"dead", 1.0, _seq("%s/dead" % TERRA, 1))
+	# aliases usados pelo player antigo
+	_add_anim(sf, &"idle", 1.0, _seq("%s/idle_front" % TERRA, 1))
+	_add_anim(sf, &"walk", 8.0, _seq("%s/walk_front" % TERRA, 4))
 	return sf
 
 
 static func warrior() -> SpriteFrames:
-	## Player principal = Gildesh (concept sheet).
-	return gildesh()
+	return terra()
 
 
 static func mira() -> SpriteFrames:
@@ -63,16 +73,23 @@ static func campfire() -> SpriteFrames:
 
 static func portrait(id: String) -> Texture2D:
 	var resolved := id
-	if id == "warrior" or id == "hero":
-		resolved = "gildesh"
+	if id == "warrior" or id == "hero" or id == "gildesh":
+		resolved = "terra"
 	var path := "res://assets/sprites/portraits/%s.png" % resolved
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D
-	# fallback
-	var fallback := "res://assets/sprites/portraits/gildesh.png"
-	if ResourceLoader.exists(fallback):
-		return load(fallback) as Texture2D
+	for fallback in ["terra", "gildesh", "warrior"]:
+		var p := "res://assets/sprites/portraits/%s.png" % fallback
+		if ResourceLoader.exists(p):
+			return load(p) as Texture2D
 	return null
+
+
+static func _seq(folder: String, count: int) -> Array:
+	var paths: Array = []
+	for i in count:
+		paths.append("%s/%02d.png" % [folder, i])
+	return paths
 
 
 static func _add_anim(sf: SpriteFrames, anim: StringName, fps: float, paths: Array) -> void:
@@ -82,6 +99,7 @@ static func _add_anim(sf: SpriteFrames, anim: StringName, fps: float, paths: Arr
 	sf.set_animation_speed(anim, fps)
 	sf.set_animation_loop(anim, true)
 	for path in paths:
-		var tex: Texture2D = load(path)
-		if tex:
-			sf.add_frame(anim, tex)
+		if ResourceLoader.exists(path):
+			var tex: Texture2D = load(path)
+			if tex:
+				sf.add_frame(anim, tex)

@@ -5,12 +5,14 @@ extends CharacterBody2D
 @onready var prompt: Label = $Prompt
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
+var _facing: StringName = &"front" ## front | back | left
+
 
 func _ready() -> void:
 	motion_mode = MOTION_MODE_FLOATING
 	prompt.visible = false
-	anim.sprite_frames = SpriteCatalog.warrior()
-	anim.play("idle")
+	anim.sprite_frames = SpriteCatalog.terra()
+	anim.play("idle_front")
 
 
 func _physics_process(_delta: float) -> void:
@@ -23,13 +25,22 @@ func _physics_process(_delta: float) -> void:
 func _update_anim(dir: Vector2) -> void:
 	if anim == null or anim.sprite_frames == null:
 		return
-	if dir.length() > 0.1:
-		anim.flip_h = dir.x < 0.0
-		if anim.animation != "walk" or not anim.is_playing():
-			anim.play("walk")
-	else:
-		if anim.animation != "idle" or not anim.is_playing():
-			anim.play("idle")
+	var moving := dir.length() > 0.1
+	if moving:
+		if absf(dir.x) > absf(dir.y):
+			_facing = &"left"
+			anim.flip_h = dir.x > 0.0 ## direita = esquerda espelhada
+		elif dir.y < 0.0:
+			_facing = &"back"
+			anim.flip_h = false
+		else:
+			_facing = &"front"
+			anim.flip_h = false
+	var prefix := "walk" if moving else "idle"
+	var anim_name := "%s_%s" % [prefix, String(_facing)]
+	if anim.animation != anim_name or not anim.is_playing():
+		if anim.sprite_frames.has_animation(anim_name):
+			anim.play(anim_name)
 
 
 func show_prompt(text: String) -> void:
