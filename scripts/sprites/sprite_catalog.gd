@@ -121,20 +121,12 @@ static func trolling() -> SpriteFrames:
 
 static func frames_for(key: String) -> SpriteFrames:
 	match key:
-		"terra", "gildesh", "warrior", "hero":
+		"terra", "gildesh", "warrior", "hero", "otto":
+			## Overworld Terra é legível; battler sheet 288×192 era exibido inteiro (grid).
 			return terra()
-		"otto":
-			return otto()
 		"lyra", "mira":
-			# prefer battler; fallback mira idle
-			var b := lyra()
-			if b.get_frame_count(&"idle") > 0:
-				return b
 			return mira()
 		"kelvin", "magus":
-			var b2 := kelvin()
-			if b2.get_frame_count(&"idle") > 0:
-				return b2
 			return magus()
 		"slime":
 			return slime()
@@ -156,33 +148,75 @@ static func frames_for(key: String) -> SpriteFrames:
 
 static func portrait(id: String) -> Texture2D:
 	var resolved := id
-	if id == "warrior" or id == "hero" or id == "gildesh" or id == "terra":
-		resolved = "otto" if ResourceLoader.exists("res://assets/sprites/portraits/otto.png") else "terra"
-	elif id == "ancião" or id == "anciao" or id == "elder" or id == "magus":
-		resolved = "kelvin" if ResourceLoader.exists("res://assets/sprites/portraits/kelvin.png") else "magus"
-	elif id == "mira":
-		resolved = "lyra" if ResourceLoader.exists("res://assets/sprites/portraits/lyra.png") else "mira"
+	if id == "warrior" or id == "hero" or id == "gildesh" or id == "terra" or id == "otto":
+		resolved = "terra" if ResourceLoader.exists("res://assets/sprites/portraits/terra.png") else "otto"
+	elif id == "ancião" or id == "anciao" or id == "elder" or id == "magus" or id == "kelvin":
+		resolved = "magus" if ResourceLoader.exists("res://assets/sprites/portraits/magus.png") else "kelvin"
+	elif id == "mira" or id == "lyra":
+		resolved = "mira" if ResourceLoader.exists("res://assets/sprites/portraits/mira.png") else "lyra"
 	var path := "res://assets/sprites/portraits/%s.png" % resolved
 	if ResourceLoader.exists(path):
-		return load(path) as Texture2D
-	for fallback in ["otto", "terra", "magus", "mira"]:
+		return _portrait_texture(load(path) as Texture2D)
+	for fallback in ["terra", "magus", "mira", "otto"]:
 		var p := "res://assets/sprites/portraits/%s.png" % fallback
 		if ResourceLoader.exists(p):
-			return load(p) as Texture2D
+			return _portrait_texture(load(p) as Texture2D)
 	return null
+
+
+## Sheets Pixel Champions / RMMV: 288×192 = grade 3×3 (96×64). Sem fatiar vira o "grid" na tela.
+const BATTLER_COLS := 3
+const BATTLER_ROWS := 3
 
 
 static func _battler(who: String) -> SpriteFrames:
 	var sf := SpriteFrames.new()
-	_add_anim(sf, &"idle", 2.0, [
+	var paths: Array[String] = [
 		"res://assets/sprites/battlers/%s/%s_battle.png" % [who, who],
 		"res://assets/sprites/battlers/%s/%s_battle_2.png" % [who, who],
-	])
-	_add_anim(sf, &"battle", 2.0, [
-		"res://assets/sprites/battlers/%s/%s_battle.png" % [who, who],
-		"res://assets/sprites/battlers/%s/%s_battle_2.png" % [who, who],
-	])
+	]
+	var frames: Array[Texture2D] = []
+	for path in paths:
+		if not ResourceLoader.exists(path):
+			continue
+		var sheet := load(path) as Texture2D
+		if sheet == null:
+			continue
+		## Usa 1ª pose (idle) de cada sheet — não a folha inteira
+		var cell := _atlas_cell(sheet, 0, 0, BATTLER_COLS, BATTLER_ROWS)
+		if cell:
+			frames.append(cell)
+		## Segunda pose da mesma sheet (meio da grade) para idle leve
+		var mid := _atlas_cell(sheet, 1, 0, BATTLER_COLS, BATTLER_ROWS)
+		if mid:
+			frames.append(mid)
+	if frames.is_empty():
+		return terra()
+	_add_anim_textures(sf, &"idle", 2.0, frames)
+	_add_anim_textures(sf, &"battle", 2.0, frames)
 	return sf
+
+
+static func _portrait_texture(tex: Texture2D) -> Texture2D:
+	if tex == null:
+		return null
+	## Retratos que ainda são sheets inteiros → 1ª célula
+	if tex.get_width() >= 200 and tex.get_height() >= 160:
+		var cell := _atlas_cell(tex, 0, 0, BATTLER_COLS, BATTLER_ROWS)
+		return cell if cell else tex
+	return tex
+
+
+static func _atlas_cell(sheet: Texture2D, col: int, row: int, cols: int, rows: int) -> AtlasTexture:
+	if sheet == null or cols <= 0 or rows <= 0:
+		return null
+	var cw := sheet.get_width() / cols
+	var ch := sheet.get_height() / rows
+	var atlas := AtlasTexture.new()
+	atlas.atlas = sheet
+	atlas.region = Rect2(col * cw, row * ch, cw, ch)
+	atlas.filter_clip = true
+	return atlas
 
 
 static func _single(path: String) -> SpriteFrames:
@@ -210,3 +244,14 @@ static func _add_anim(sf: SpriteFrames, anim: StringName, fps: float, paths: Arr
 			var tex: Texture2D = load(path)
 			if tex:
 				sf.add_frame(anim, tex)
+
+
+static func _add_anim_textures(sf: SpriteFrames, anim: StringName, fps: float, textures: Array[Texture2D]) -> void:
+	if sf.has_animation(anim):
+		sf.remove_animation(anim)
+	sf.add_animation(anim)
+	sf.set_animation_speed(anim, fps)
+	sf.set_animation_loop(anim, true)
+	for tex in textures:
+		if tex:
+			sf.add_frame(anim, tex)

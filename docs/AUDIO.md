@@ -16,9 +16,10 @@ Fonte: RTP RPG Maker (copiado de `assets/sprites/rtp/Audio/`).
 
 `AudioManager` (`autoload/audio_manager.gd`)
 
-- Buses runtime: **Music**, **SFX**, **UI**
+- Buses runtime: **Master** (−10 dB), **Music** (−8), **SFX** (−6), **UI** (−10)
 - Pool de SFX/UI + crossfade de BGM
 - `PROCESS_MODE_ALWAYS` (continua com diálogo pausado)
+- BGM faz fade para −6 dB (não 0) para manter o volume geral baixo
 
 ## Mapa rápido
 

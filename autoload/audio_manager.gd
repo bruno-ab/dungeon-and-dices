@@ -42,10 +42,11 @@ func _ensure_buses() -> void:
 	_add_bus_if_missing("Music")
 	_add_bus_if_missing("SFX")
 	_add_bus_if_missing("UI")
-	# volumes padrão (suaves)
-	_set_bus_db("Music", -4.0)
-	_set_bus_db("SFX", -2.0)
-	_set_bus_db("UI", -6.0)
+	## Volume geral mais baixo (Master afeta tudo)
+	_set_bus_db("Master", -10.0)
+	_set_bus_db("Music", -8.0)
+	_set_bus_db("SFX", -6.0)
+	_set_bus_db("UI", -10.0)
 
 
 func _add_bus_if_missing(bus_name: String) -> void:
@@ -102,13 +103,13 @@ func play_bgm(track: String, fade := 0.7) -> void:
 	incoming.play()
 	var tw := create_tween()
 	tw.set_parallel(true)
-	tw.tween_property(incoming, "volume_db", 0.0, fade)
+	tw.tween_property(incoming, "volume_db", -6.0, fade)
 	if outgoing.playing:
 		tw.tween_property(outgoing, "volume_db", -40.0, fade)
 	tw.chain().tween_callback(func():
 		if outgoing != incoming:
 			outgoing.stop()
-			outgoing.volume_db = 0.0
+			outgoing.volume_db = -6.0
 	)
 	_music_active = incoming
 
@@ -121,11 +122,11 @@ func stop_bgm(fade := 0.4) -> void:
 			tw.tween_property(p, "volume_db", -40.0, fade)
 			tw.tween_callback(func():
 				p.stop()
-				p.volume_db = 0.0
+				p.volume_db = -6.0
 			)
 
 
-func play_bgs(track: String, volume_db := -12.0) -> void:
+func play_bgs(track: String, volume_db := -18.0) -> void:
 	var stream := _load_stream(PATH_BGS % track)
 	if stream == null:
 		return
@@ -142,11 +143,11 @@ func stop_bgs(fade := 0.3) -> void:
 	tw.tween_property(_bgs, "volume_db", -40.0, fade)
 	tw.tween_callback(func():
 		_bgs.stop()
-		_bgs.volume_db = -12.0
+		_bgs.volume_db = -18.0
 	)
 
 
-func play_me(track: String, volume_db := 0.0) -> void:
+func play_me(track: String, volume_db := -6.0) -> void:
 	var stream := _load_stream(PATH_ME % track)
 	if stream == null:
 		return
@@ -156,11 +157,11 @@ func play_me(track: String, volume_db := 0.0) -> void:
 	_me.play()
 
 
-func play_sfx(track: String, pitch := 1.0, volume_db := 0.0) -> void:
+func play_sfx(track: String, pitch := 1.0, volume_db := -4.0) -> void:
 	_play_pooled(_sfx_pool, PATH_SE % track, pitch, volume_db)
 
 
-func play_ui(track: String, pitch := 1.0, volume_db := 0.0) -> void:
+func play_ui(track: String, pitch := 1.0, volume_db := -6.0) -> void:
 	_play_pooled(_ui_pool, PATH_SE % track, pitch, volume_db)
 
 

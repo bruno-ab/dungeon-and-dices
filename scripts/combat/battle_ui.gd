@@ -251,34 +251,39 @@ func _build_stage() -> void:
 	for child in stage.get_children():
 		child.queue_free()
 	_stage_sprites.clear()
+	stage.clip_contents = true
 	var foes_box := HBoxContainer.new()
-	foes_box.add_theme_constant_override("separation", 28)
-	foes_box.set_anchors_preset(Control.PRESET_CENTER_LEFT)
-	foes_box.position = Vector2(40, 80)
+	foes_box.add_theme_constant_override("separation", 36)
+	foes_box.position = Vector2(48, 48)
 	var allies_box := HBoxContainer.new()
-	allies_box.add_theme_constant_override("separation", 28)
-	allies_box.position = Vector2(620, 100)
+	allies_box.add_theme_constant_override("separation", 36)
+	allies_box.position = Vector2(620, 56)
 	for c in battle.combatants:
 		var holder := VBoxContainer.new()
+		holder.alignment = BoxContainer.ALIGNMENT_END
 		var sprite := AnimatedSprite2D.new()
 		sprite.sprite_frames = SpriteCatalog.frames_for(c.sprite_key)
 		if sprite.sprite_frames.has_animation(&"battle"):
 			sprite.play(&"battle")
 		elif sprite.sprite_frames.has_animation(&"idle"):
 			sprite.play(&"idle")
+		elif sprite.sprite_frames.has_animation(&"idle_front"):
+			sprite.play(&"idle_front")
 		sprite.centered = true
-		var scale_v := 0.85
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var scale_v := 2.2
 		if c.sprite_key in ["serpent_green", "serpent_purple", "golem_corrupt", "trolling"]:
 			scale_v = 0.55
-		elif c.sprite_key in ["otto", "lyra", "kelvin"]:
-			scale_v = 0.95
-		elif c.sprite_key == "magus":
-			scale_v = 0.45
+		elif c.sprite_key in ["slime", "shade"]:
+			scale_v = 2.0
+		elif c.sprite_key == "magus" or c.sprite_key == "kelvin":
+			scale_v = 0.55
 		sprite.scale = Vector2(scale_v, scale_v)
 		var canvas := Control.new()
-		canvas.custom_minimum_size = Vector2(110, 120)
+		canvas.custom_minimum_size = Vector2(120, 130)
+		canvas.clip_contents = true
 		canvas.add_child(sprite)
-		sprite.position = Vector2(55, 70)
+		sprite.position = Vector2(60, 78)
 		var tag := Label.new()
 		tag.text = c.display_name
 		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
