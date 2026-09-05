@@ -45,10 +45,18 @@ Mapeamento em `SpriteCatalog.portrait()` — rostos não precisam coincidir; só
 
 ## Mapa da vila
 
-`TileMapLayer` + `Outside_A5` (`scripts/exploration/village_tile_layer.gd`, `scripts/world/rtp_tileset.gd`).
+TileSets configurados em `assets/tilesets/`:
+
+- `village.tres` — fontes A5/A2/B/C/A1 (32×32)
+- `outside_*.tres` — cada sheet isolada
+- Regenerar: `python scripts/tools/generate_tilesets.py`
+
+A cena `village.tscn` referencia `village.tres` no `TileMapLayer`.
 
 ## Código
 
 - `scripts/sprites/sprite_catalog.gd` — fonte de frames/retratos
 - `scripts/combat/battle_ui.gd` — stage + party cards
 - `scenes/exploration/village.tscn` — mapa
+- `scripts/exploration/village_tile_layer.gd` — pintura procedural da vila
+- `scripts/world/rtp_tileset.gd` — atalhos `RtpTileset.village()` etc.

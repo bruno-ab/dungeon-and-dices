@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bvillage001"]
+[gd_scene load_steps=12 format=3 uid="uid://bvillage001"]
 
 [ext_resource type="Script" path="res://scripts/exploration/village_controller.gd" id="1_village"]
 [ext_resource type="Script" path="res://scripts/exploration/player_controller.gd" id="2_player"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/sprites/catalog_sprite.gd" id="5_sprite"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="6_dlg"]
 [ext_resource type="Script" path="res://scripts/exploration/village_tile_layer.gd" id="7_tiles"]
+[ext_resource type="TileSet" path="res://assets/tilesets/village.tres" id="8_tileset"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(28, 28)
@@ -24,6 +25,7 @@ script = ExtResource("1_village")
 
 [node name="TileMap" type="TileMapLayer" parent="World"]
 z_index = -2
+tile_set = ExtResource("8_tileset")
 script = ExtResource("7_tiles")
 
 [node name="Title" type="Label" parent="World"]

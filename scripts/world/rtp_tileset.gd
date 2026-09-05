@@ -1,40 +1,45 @@
 class_name RtpTileset
 extends RefCounted
 
-## TileSets a partir de `Graphics/Tilesets` (RTP VX Ace / 32×32).
+## Carrega TileSets pré-configurados em `assets/tilesets/*.tres`.
+## Regenerar: `python scripts/tools/generate_tilesets.py`
 
-const PATH_OUTSIDE_A5 := "res://assets/sprites/rtp/Graphics/Tilesets/Outside_A5.png"
-const PATH_OUTSIDE_A2 := "res://assets/sprites/rtp/Graphics/Tilesets/Outside_A2.png"
 const TILE := 32
+
+const PATH_VILLAGE := "res://assets/tilesets/village.tres"
+const PATH_A5 := "res://assets/tilesets/outside_a5.tres"
+const PATH_A2 := "res://assets/tilesets/outside_a2.tres"
+const PATH_B := "res://assets/tilesets/outside_b.tres"
+const PATH_C := "res://assets/tilesets/outside_c.tres"
+const PATH_A1 := "res://assets/tilesets/outside_a1.tres"
+
+## Source IDs em village.tres
+const SRC_A5 := 0
+const SRC_A2 := 1
+const SRC_B := 2
+const SRC_C := 3
+const SRC_A1 := 4
+
+
+static func village() -> TileSet:
+	return load(PATH_VILLAGE) as TileSet
 
 
 static func outside_a5() -> TileSet:
-	return _atlas_tileset(PATH_OUTSIDE_A5, TILE)
+	return load(PATH_A5) as TileSet
 
 
 static func outside_a2() -> TileSet:
-	return _atlas_tileset(PATH_OUTSIDE_A2, TILE)
+	return load(PATH_A2) as TileSet
 
 
-static func _atlas_tileset(path: String, tile_px: int) -> TileSet:
-	var tex := load(path) as Texture2D
-	var ts := TileSet.new()
-	ts.tile_size = Vector2i(tile_px, tile_px)
-	if tex == null:
-		push_warning("RtpTileset: missing %s" % path)
-		return ts
-	var src := TileSetAtlasSource.new()
-	src.texture = tex
-	src.texture_region_size = Vector2i(tile_px, tile_px)
-	var sid := ts.add_source(src, 0)
-	var cols := int(tex.get_width() / tile_px)
-	var rows := int(tex.get_height() / tile_px)
-	for y in rows:
-		for x in cols:
-			var coords := Vector2i(x, y)
-			if not src.has_tile(coords):
-				src.create_tile(coords)
-	## sid unused beyond add — keep for clarity
-	if sid < 0:
-		pass
-	return ts
+static func outside_b() -> TileSet:
+	return load(PATH_B) as TileSet
+
+
+static func outside_c() -> TileSet:
+	return load(PATH_C) as TileSet
+
+
+static func outside_a1() -> TileSet:
+	return load(PATH_A1) as TileSet
