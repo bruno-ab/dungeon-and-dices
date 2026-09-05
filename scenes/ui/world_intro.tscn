@@ -1,0 +1,86 @@
+[gd_scene load_steps=2 format=3 uid="uid://bworldintro001"]
+
+[ext_resource type="Script" path="res://scripts/ui/world_intro.gd" id="1_intro"]
+
+[node name="WorldIntro" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_intro")
+
+[node name="Sky" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+texture_filter = 1
+
+[node name="Mountains" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -320.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+texture_filter = 1
+
+[node name="LoreText" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+anchors_preset = 0
+offset_left = 160.0
+offset_top = 400.0
+offset_right = 1120.0
+offset_bottom = 900.0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.92, 0.88, 0.78, 1)
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = false
+fit_content = false
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="SkipLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -48.0
+offset_right = -24.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.7, 0.68, 0.62, 0.85)
+theme_override_font_sizes/font_size = 14
+text = "Pular (E / Espaço / Esc)"
+horizontal_alignment = 2
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

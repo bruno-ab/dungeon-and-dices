@@ -35,6 +35,18 @@ Fonte: `assets/sprites/rtp/Graphics/Faces` (sheets 384×192 → 4×2 faces de 96
 
 Mapeamento em `SpriteCatalog.portrait()` — rostos não precisam coincidir; só placeholder VN.
 
+## Intro de mundo
+
+`scenes/ui/world_intro.tscn` — `Parallaxes/StarlitSky` + `Titles2/Mountains`, fade e texto subindo (lore Mittelerd). Start Game → intro → vila.
+
+## UI System (RTP)
+
+`scripts/ui/rtp_ui.gd` aplica `Graphics/System/Window.png` em painéis/botões (menu + diálogo).
+
+## Mapa da vila
+
+`TileMapLayer` + `Outside_A5` (`scripts/exploration/village_tile_layer.gd`, `scripts/world/rtp_tileset.gd`).
+
 ## Código
 
 - `scripts/sprites/sprite_catalog.gd` — fonte de frames/retratos

@@ -22,6 +22,8 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	continue_btn.pressed.connect(_on_continue_pressed)
 	add_to_group("dialogue_box")
+	RtpUi.apply_window_panel($Panel)
+	RtpUi.apply_button_styles(continue_btn)
 
 
 ## Compat legado (linhas simples)

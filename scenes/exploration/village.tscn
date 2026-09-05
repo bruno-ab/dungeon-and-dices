@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bvillage001"]
+[gd_scene load_steps=11 format=3 uid="uid://bvillage001"]
 
 [ext_resource type="Script" path="res://scripts/exploration/village_controller.gd" id="1_village"]
 [ext_resource type="Script" path="res://scripts/exploration/player_controller.gd" id="2_player"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/exploration/npc_interact.gd" id="4_npc"]
 [ext_resource type="Script" path="res://scripts/sprites/catalog_sprite.gd" id="5_sprite"]
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="6_dlg"]
+[ext_resource type="Script" path="res://scripts/exploration/village_tile_layer.gd" id="7_tiles"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(28, 28)
@@ -21,33 +22,9 @@ script = ExtResource("1_village")
 
 [node name="World" type="Node2D" parent="."]
 
-[node name="Ground" type="ColorRect" parent="World"]
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 1700.0
-offset_bottom = 1200.0
-color = Color(0.11, 0.14, 0.12, 1)
-
-[node name="Plaza" type="ColorRect" parent="World"]
-offset_left = 520.0
-offset_top = 380.0
-offset_right = 980.0
-offset_bottom = 700.0
-color = Color(0.17, 0.18, 0.2, 1)
-
-[node name="RoadEast" type="ColorRect" parent="World"]
-offset_left = 960.0
-offset_top = 480.0
-offset_right = 1580.0
-offset_bottom = 580.0
-color = Color(0.16, 0.17, 0.19, 1)
-
-[node name="RoadNorth" type="ColorRect" parent="World"]
-offset_left = 680.0
-offset_top = 120.0
-offset_right = 820.0
-offset_bottom = 420.0
-color = Color(0.16, 0.17, 0.19, 1)
+[node name="TileMap" type="TileMapLayer" parent="World"]
+z_index = -2
+script = ExtResource("7_tiles")
 
 [node name="Title" type="Label" parent="World"]
 offset_left = 560.0
