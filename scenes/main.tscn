@@ -1,0 +1,68 @@
+[gd_scene load_steps=2 format=3 uid="uid://bmainmenu001"]
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.08, 0.11, 1)
+
+[node name="Center" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -140.0
+offset_right = 260.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Dungeon and Dices"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.72, 0.65, 1)
+text = "MVP — exploração, dados e combate reativo
+Godot 4.7.2"
+horizontal_alignment = 1
+
+[node name="StartBtn" type="Button" parent="Center"]
+layout_mode = 2
+text = "Nova run (hub)"
+
+[node name="ContinueBtn" type="Button" parent="Center"]
+layout_mode = 2
+text = "Continuar hub (mantém progresso da sessão)"
+
+[node name="Hint" type="Label" parent="Center"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.55, 0.55, 0.6, 1)
+text = "Controles: WASD · E interagir · Espaço/J/K reagir no combate · 1/2 gastar skill points"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[connection signal="pressed" from="Center/StartBtn" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="Center/ContinueBtn" to="." method="_on_continue_pressed"]

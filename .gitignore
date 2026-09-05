@@ -1,7 +1,18 @@
-﻿node_modules/
+﻿# Godot
+.godot/
+*.translation
+export_presets.cfg
+*.tmp
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.import
+
+# Secrets / deps
+node_modules/
 dist/
 .env
 .env.*
 !.env.example
-.DS_Store
 *.log

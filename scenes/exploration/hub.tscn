@@ -1,0 +1,149 @@
+[gd_scene load_steps=6 format=3 uid="uid://bhubscene001"]
+
+[ext_resource type="Script" path="res://scripts/exploration/hub_controller.gd" id="1_hub"]
+[ext_resource type="Script" path="res://scripts/exploration/player_controller.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/exploration/interact_zone.gd" id="3_zone"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_zone"]
+size = Vector2(96, 96)
+
+[node name="Hub" type="Node2D"]
+script = ExtResource("1_hub")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Floor" type="ColorRect" parent="World"]
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 1320.0
+offset_bottom = 760.0
+color = Color(0.12, 0.14, 0.18, 1)
+
+[node name="Path" type="ColorRect" parent="World"]
+offset_left = 80.0
+offset_top = 280.0
+offset_right = 1200.0
+offset_bottom = 400.0
+color = Color(0.18, 0.2, 0.24, 1)
+
+[node name="LabelCamp" type="Label" parent="World"]
+offset_left = 100.0
+offset_top = 120.0
+offset_right = 420.0
+offset_bottom = 160.0
+theme_override_font_sizes/font_size = 22
+text = "Acampamento — Fogueira"
+
+[node name="LabelGate" type="Label" parent="World"]
+offset_left = 880.0
+offset_top = 120.0
+offset_right = 1220.0
+offset_bottom = 160.0
+theme_override_font_sizes/font_size = 22
+text = "Trilha Sombria — Combate"
+
+[node name="LabelRecruit" type="Label" parent="World"]
+offset_left = 480.0
+offset_top = 480.0
+offset_right = 820.0
+offset_bottom = 520.0
+theme_override_font_sizes/font_size = 22
+text = "Mira (recrutamento)"
+
+[node name="Player" type="CharacterBody2D" parent="World" groups=["player"]]
+position = Vector2(220, 340)
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("2_player")
+
+[node name="Body" type="Polygon2D" parent="World/Player"]
+color = Color(0.55, 0.75, 0.95, 1)
+polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="Prompt" type="Label" parent="World/Player"]
+offset_left = -80.0
+offset_top = -44.0
+offset_right = 120.0
+offset_bottom = -20.0
+theme_override_font_sizes/font_size = 14
+text = "E — interagir"
+horizontal_alignment = 1
+
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+position_smoothing_enabled = true
+
+[node name="HealZone" type="Area2D" parent="World"]
+position = Vector2(220, 200)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_zone")
+prompt_text = "E — Descansar (cura total)"
+mode = "heal"
+
+[node name="Visual" type="Polygon2D" parent="World/HealZone"]
+color = Color(0.75, 0.45, 0.25, 0.55)
+polygon = PackedVector2Array(-48, -48, 48, -48, 48, 48, -48, 48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/HealZone"]
+shape = SubResource("RectangleShape2D_zone")
+
+[node name="BattleZone" type="Area2D" parent="World"]
+position = Vector2(1040, 340)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_zone")
+prompt_text = "E — Entrar em combate"
+mode = "battle"
+
+[node name="Visual" type="Polygon2D" parent="World/BattleZone"]
+color = Color(0.55, 0.2, 0.25, 0.65)
+polygon = PackedVector2Array(-48, -48, 48, -48, 48, 48, -48, 48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/BattleZone"]
+shape = SubResource("RectangleShape2D_zone")
+
+[node name="RecruitZone" type="Area2D" parent="World"]
+position = Vector2(640, 560)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_zone")
+prompt_text = "E — Falar com Mira"
+mode = "recruit"
+
+[node name="Visual" type="Polygon2D" parent="World/RecruitZone"]
+color = Color(0.55, 0.35, 0.7, 0.55)
+polygon = PackedVector2Array(-48, -48, 48, -48, 48, 48, -48, 48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/RecruitZone"]
+shape = SubResource("RectangleShape2D_zone")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Label" parent="CanvasLayer"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 900.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 16
+text = "HUD"
+
+[node name="Toast" type="Label" parent="CanvasLayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -80.0
+offset_right = 280.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1

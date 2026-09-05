@@ -1,0 +1,151 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbattle001"]
+
+[ext_resource type="Script" path="res://scripts/combat/battle_ui.gd" id="1_ui"]
+[ext_resource type="Script" path="res://scripts/combat/battle_controller.gd" id="2_battle"]
+
+[node name="BattleRoot" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ui")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.07, 0.1, 1)
+
+[node name="BattleController" type="Node" parent="."]
+script = ExtResource("2_battle")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 520.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 28
+text = "Combate — Turnos Reativos"
+
+[node name="Status" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 52.0
+offset_right = 700.0
+offset_bottom = 80.0
+text = "Status"
+
+[node name="Portraits" type="HBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 96.0
+offset_right = 1240.0
+offset_bottom = 180.0
+theme_override_constants/separation = 12
+
+[node name="Log" type="RichTextLabel" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 200.0
+offset_right = 820.0
+offset_bottom = 520.0
+bbcode_enabled = true
+scroll_following = true
+
+[node name="ReactionHint" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 530.0
+offset_right = 820.0
+offset_bottom = 560.0
+theme_override_colors/font_color = Color(0.95, 0.8, 0.4, 1)
+text = "REAÇÃO"
+
+[node name="ReactionBar" type="ProgressBar" parent="UI"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 565.0
+offset_right = 820.0
+offset_bottom = 590.0
+show_percentage = false
+
+[node name="Actions" type="VBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = 880.0
+offset_top = 200.0
+offset_right = 1240.0
+offset_bottom = 420.0
+theme_override_constants/separation = 10
+
+[node name="AttackA" type="Button" parent="UI/Actions"]
+layout_mode = 2
+text = "Atacar Lodo Sombrio (dados)"
+
+[node name="AttackB" type="Button" parent="UI/Actions"]
+layout_mode = 2
+text = "Atacar Sombra (dados)"
+
+[node name="Guard" type="Button" parent="UI/Actions"]
+layout_mode = 2
+text = "Preparar (+2 HP)"
+
+[node name="Flee" type="Button" parent="UI/Actions"]
+layout_mode = 2
+text = "Fugir (volta ao hub, -3 HP)"
+
+[node name="Help" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 880.0
+offset_top = 440.0
+offset_right = 1240.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+text = "Quando o inimigo atacar, a barra sobe.
+Espaço / J / K:
+• cedo = Parry / Perfect
+• no pico = Dodge
+• fora = MISS"
+autowrap_mode = 3
+
+[node name="EndPanel" type="PanelContainer" parent="UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -80.0
+offset_right = 180.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="UI/EndPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EndLabel" type="Label" parent="UI/EndPanel/VBox"]
+layout_mode = 2
+text = "Fim"
+horizontal_alignment = 1
+
+[node name="ReturnBtn" type="Button" parent="UI/EndPanel/VBox"]
+layout_mode = 2
+text = "Voltar ao hub"
