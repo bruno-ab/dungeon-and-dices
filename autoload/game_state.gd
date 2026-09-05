@@ -105,9 +105,9 @@ func party_summary() -> String:
 
 func quest_text() -> String:
 	if phase1_trail_cleared:
-		return "Fase 1 concluída — fale com o Ancião na praça."
+		return "Fase 1 concluída — fale com Magus na praça."
 	if not met_elder:
-		return "Objetivo: fale com o Ancião na praça da Vila de Cinzas."
+		return "Objetivo: fale com Magus na praça da Vila de Cinzas."
 	if not recruited_mira:
 		return "Objetivo: recrute Mira (opcional) e limpe a Trilha Sombria a leste."
 	return "Objetivo: limpe a Trilha Sombria a leste da vila."

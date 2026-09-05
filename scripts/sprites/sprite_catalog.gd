@@ -34,6 +34,26 @@ static func warrior() -> SpriteFrames:
 	return terra()
 
 
+static func magus() -> SpriteFrames:
+	## NPC mago (spritesheet magus.png → frames/).
+	const M := "res://assets/sprites/magus/frames"
+	var sf := SpriteFrames.new()
+	_add_anim(sf, &"idle", 1.0, ["%s/front/00.png" % M])
+	_add_anim(sf, &"idle_front", 1.0, ["%s/front/00.png" % M])
+	_add_anim(sf, &"idle_back", 1.0, ["%s/back/00.png" % M])
+	_add_anim(sf, &"idle_left", 1.0, ["%s/left/00.png" % M])
+	_add_anim(sf, &"idle_right", 1.0, ["%s/right/00.png" % M])
+	_add_anim(sf, &"walk_front", 6.0, _seq("%s/front" % M, 5))
+	_add_anim(sf, &"walk_back", 6.0, _seq("%s/back" % M, 5))
+	_add_anim(sf, &"walk_left", 6.0, _seq("%s/left" % M, 5))
+	_add_anim(sf, &"walk_right", 6.0, _seq("%s/right" % M, 5))
+	_add_anim(sf, &"attack", 8.0, _seq("%s/attack" % M, 4))
+	_add_anim(sf, &"cast", 7.0, _seq("%s/cast" % M, 5))
+	_add_anim(sf, &"hurt", 5.0, _seq("%s/hurt" % M, 5))
+	_add_anim(sf, &"walk", 6.0, _seq("%s/front" % M, 5))
+	return sf
+
+
 static func mira() -> SpriteFrames:
 	var sf := SpriteFrames.new()
 	_add_anim(sf, &"idle", 3.0, [
@@ -75,6 +95,8 @@ static func portrait(id: String) -> Texture2D:
 	var resolved := id
 	if id == "warrior" or id == "hero" or id == "gildesh":
 		resolved = "terra"
+	elif id == "ancião" or id == "anciao" or id == "elder":
+		resolved = "magus"
 	var path := "res://assets/sprites/portraits/%s.png" % resolved
 	if ResourceLoader.exists(path):
 		return load(path) as Texture2D

@@ -1,6 +1,6 @@
 extends AnimatedSprite2D
 
-@export_enum("terra", "gildesh", "warrior", "mira", "slime", "shade", "campfire") var catalog_id: String = "terra"
+@export_enum("terra", "gildesh", "warrior", "magus", "mira", "slime", "shade", "campfire") var catalog_id: String = "terra"
 @export var animation_name: StringName = &"idle"
 
 
@@ -10,6 +10,8 @@ func _ready() -> void:
 			sprite_frames = SpriteCatalog.terra()
 			if sprite_frames.has_animation(&"idle_front"):
 				animation_name = &"idle_front"
+		"magus":
+			sprite_frames = SpriteCatalog.magus()
 		"mira":
 			sprite_frames = SpriteCatalog.mira()
 		"slime":

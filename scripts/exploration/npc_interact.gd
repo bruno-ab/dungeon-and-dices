@@ -52,7 +52,7 @@ func _activate() -> void:
 				GameState.party_changed.emit()
 				GameState.quest_updated.emit(GameState.quest_text())
 				_talk("Mira", PackedStringArray([
-					"Ouvi o Ancião. Posso lutar ao seu lado.",
+					"Ouvi o Magus. Posso lutar ao seu lado.",
 					"Meu dado é um d8 — mais ágil que forte.",
 					"Mira entrou no grupo!",
 				]))
@@ -73,22 +73,24 @@ func _activate() -> void:
 
 
 func _elder() -> void:
+	var name := speaker_name if speaker_name != "" else "Magus"
 	if GameState.phase1_trail_cleared:
-		_talk("Ancião", PackedStringArray([
+		_talk(name, PackedStringArray([
 			"Você afastou as sombras. A Vila de Cinzas respira de novo.",
 			"Isso conclui a primeira fase da sua jornada.",
 		]), func(): SceneRouter.go_phase_complete())
 		return
 	if not GameState.met_elder:
 		GameState.mark_met_elder()
-		_talk("Ancião", PackedStringArray([
+		_talk(name, PackedStringArray([
 			"Forasteiro… bem-vindo à Vila de Cinzas.",
+			"Sou Magus. Guardo o que resta de nossa magia antiga.",
 			"Sombras tomaram a Trilha a leste. Ninguém volta inteiro.",
 			"Recrute Mira perto do poço, se quiser companhia.",
 			"Descanse na estalagem ao norte. Depois, limpe a trilha.",
 		]))
 	else:
-		_talk("Ancião", PackedStringArray([
+		_talk(name, PackedStringArray([
 			"Ainda esperamos notícias da Trilha Sombria.",
 			GameState.quest_text(),
 		]))

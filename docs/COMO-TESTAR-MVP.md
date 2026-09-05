@@ -10,12 +10,12 @@
 ```
 Menu (Start Game)
    → Vila de Cinzas
-      → Ancião (missão)
+      → Magus (missão)
       → Estalagem (cura)
       → Mira (recruta, opcional)
       → Trilha Sombria (combate reativo)
    → Volta à vila
-   → Ancião (encerra Fase 1)
+   → Magus (encerra Fase 1)
 ```
 
 ## Controles
@@ -30,10 +30,10 @@ Menu (Start Game)
 
 ## Objetivo da Fase 1
 
-1. Falar com o **Ancião** na praça  
+1. Falar com **Magus** na praça  
 2. (Opcional) Recrutar **Mira** no poço  
 3. Entrar na **Trilha Sombria** e vencer o combate  
-4. Voltar e falar com o Ancião → tela de conclusão  
+4. Voltar e falar com Magus → tela de conclusão  
 
 ## Sistemas ativos
 
@@ -42,3 +42,4 @@ Menu (Start Game)
 - Dice Engine + turnos + Dodge/Parry/Perfect
 - Progressão XP / skill points
 - Recrutamento dinâmico
+- NPC Magus com spritesheet (`assets/sprites/magus/`)

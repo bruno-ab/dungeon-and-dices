@@ -78,7 +78,7 @@ script = ExtResource("3_building")
 building_size = Vector2(170, 130)
 building_color = Color(0.24, 0.26, 0.3, 1)
 roof_color = Color(0.32, 0.34, 0.4, 1)
-label_text = "Casa do Ancião"
+label_text = "Torre do Magus"
 
 [node name="WellHouse" type="StaticBody2D" parent="World/Buildings"]
 position = Vector2(1120, 720)
@@ -174,20 +174,22 @@ limit_bottom = 1080
 
 [node name="NPCs" type="Node2D" parent="World"]
 
-[node name="Elder" type="Area2D" parent="World/NPCs"]
+[node name="Magus" type="Area2D" parent="World/NPCs"]
 position = Vector2(520, 560)
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("4_npc")
-prompt_text = "E — Falar com o Ancião"
+prompt_text = "E — Falar com Magus"
 mode = "elder"
-speaker_name = "Ancião"
+speaker_name = "Magus"
 
-[node name="Sprite" type="Polygon2D" parent="World/NPCs/Elder"]
-color = Color(0.75, 0.7, 0.55, 1)
-polygon = PackedVector2Array(-12, -18, 12, -18, 12, 18, -12, 18)
+[node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Magus"]
+scale = Vector2(0.65, 0.65)
+offset = Vector2(0, -20)
+script = ExtResource("5_sprite")
+catalog_id = "magus"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Elder"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Magus"]
 shape = SubResource("RectangleShape2D_npc")
 
 [node name="Innkeeper" type="Area2D" parent="World/NPCs"]
