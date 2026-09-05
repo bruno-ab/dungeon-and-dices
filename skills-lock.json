@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "skills": {
+    "document-to-narration": {
+      "source": "jwynia/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/education/document-to-narration/SKILL.md",
+      "computedHash": "7a0e47df82c00680855e8010c6f9662e93a7874b46644cf3df1cbde858f4619f"
+    },
+    "godot-2d-animation": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-2d-animation/SKILL.md",
+      "computedHash": "5e01542a10ba6af75f6c444beaba8bbba2950eab49c0e42c4b13f00bcb88e9ac"
+    },
+    "godot-2d-movement": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot/godot-2d-movement/SKILL.md",
+      "computedHash": "f28d9c9e662bab12395aa3e4b0bc0e927fcf12cfff941aaddc60893c378f449d"
+    },
+    "godot-ability-system": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-ability-system/SKILL.md",
+      "computedHash": "f94f4e221b4e6c354f49371a3ea6036f1b0a49b8ecc1c9c8c9636524334fe9e3"
+    },
+    "godot-animation": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot/godot-animation/SKILL.md",
+      "computedHash": "e67a25f0a1ea1af9d87905a294d9271920843fd953f8fe56bd6888beccda7bd9"
+    },
+    "godot-camera-systems": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-camera-systems/SKILL.md",
+      "computedHash": "fc2895bb399f75f2c22dd74a75db1e872c28459f6da093aacc1f619916523db0"
+    },
+    "godot-development": {
+      "source": "zate/cc-godot",
+      "sourceType": "github",
+      "skillPath": "plugins/gd/skills/godot-dev/SKILL.md",
+      "computedHash": "36ff87f70db9fe7e4b83be711696dcc027febc310d4938a4b71bb592d2bf3b51"
+    },
+    "godot-dialogue-system": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-dialogue-system/SKILL.md",
+      "computedHash": "3c8935619e01aefc732b107f3991e017021841e5751bca99c85a8576ed793dc6"
+    },
+    "godot-gdscript-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/game-development/skills/godot-gdscript-patterns/SKILL.md",
+      "computedHash": "1bc6b34a15aebcb4f64b81d90d2105dee4adda9a93e4d13cd4c905a15f3abad3"
+    },
+    "godot-genre-open-world": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-genre-open-world/SKILL.md",
+      "computedHash": "6a17978700f0ad3e9a6b3c2cbffe33e3916b45a3aea19ddea25f4931ea838eb1"
+    },
+    "godot-genre-visual-novel": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-genre-visual-novel/SKILL.md",
+      "computedHash": "bd327cebff3d997165d4aec4e8f5634a3a63f3b7198eda57634b5ad56b1cd420"
+    },
+    "godot-inventory-system": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-inventory-system/SKILL.md",
+      "computedHash": "f14bfae28c7db9aaf4110aa18fe369d5e0e0dcc01d812bf3a4cabe96c5325609"
+    },
+    "godot-master": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-master/SKILL.md",
+      "computedHash": "d980c69e01d272deb52f25ca0e3eaa317e240f288548db07c53763f9c6b12b35"
+    },
+    "godot-nodes-scenes": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot/godot-nodes-scenes/SKILL.md",
+      "computedHash": "c8da9c0defe579eea5e89956d8337085a3ce9e5d8cef9293b219a88b4b6e0cc2"
+    },
+    "godot-optimization": {
+      "source": "zate/cc-godot",
+      "sourceType": "github",
+      "skillPath": "plugins/gd/skills/godot-optimization/SKILL.md",
+      "computedHash": "d56e83fae6b3778d9ac20d49e16191ba2d85a7e3b5dae453e5d9654096d0e4da"
+    },
+    "godot-project-templates": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-project-templates/SKILL.md",
+      "computedHash": "d8f57b6ca01bcbb5e13815b97c957466062d16423a1baa889edbaa5e2d04bd6c"
+    },
+    "godot-quest-system": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-quest-system/SKILL.md",
+      "computedHash": "585a094262f98ea750185ea3b525bc607259dc85cc95afb4a1d68bb5ef0b1b19"
+    },
+    "godot-rpg-stats": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-rpg-stats/SKILL.md",
+      "computedHash": "00b21adb610d08a80e38b8f0527bd0399f70a730722a4bd0e5efded6b05b4af4"
+    },
+    "godot-shaders": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot/godot-shaders/SKILL.md",
+      "computedHash": "8d77e198fc65c6d7ba304a1efb68499835bab892c0add0c961f8cd2c8c72e415"
+    },
+    "godot-turn-system": {
+      "source": "thedivergentai/gd-agentic-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot-turn-system/SKILL.md",
+      "computedHash": "3bcc40a096464ba874ad713219722bd6a59de4ba3389bb4affce47e72d1dcb47"
+    },
+    "godot-ui": {
+      "source": "zate/cc-godot",
+      "sourceType": "github",
+      "skillPath": "plugins/gd/skills/godot-ui/SKILL.md",
+      "computedHash": "0ed46667be618a59b0f0072f2a6ed98cbe439c71eb300156ad4158b11a5b2c2d"
+    },
+    "godot-ui-control": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/godot/godot-ui-control/SKILL.md",
+      "computedHash": "522dec0a123c1f780d542406a44a8f81770777ab5f2be8d1bd43bde995fdf6c7"
+    },
+    "spritecook-use-assets-in-godot": {
+      "source": "spritecook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/spritecook-use-assets-in-godot/SKILL.md",
+      "computedHash": "c8a680d80a38b92ee558e5ccf14911c22069f7185ef0868c8e3a485bfb19b01c"
+    }
+  }
+}
