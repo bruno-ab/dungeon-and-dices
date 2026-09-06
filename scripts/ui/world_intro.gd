@@ -1,6 +1,7 @@
 extends Control
 
 ## Intro de mundo: StarlitSky + Mountains, fade e texto subindo.
+## Pular: botão «Pular história», E / Espaço / Esc.
 
 const LORE_TEXT := """No Império de Vasta, o Arcano é monopólio da Sentinela da Providência.
 
@@ -24,11 +25,11 @@ A lâmina ainda não escolheu."""
 @onready var mountains: TextureRect = %Mountains
 @onready var fade: ColorRect = %Fade
 @onready var lore: RichTextLabel = %LoreText
-@onready var skip_l: Label = %SkipLabel
+@onready var skip_btn: Button = %SkipBtn
 
-var _busy: bool = false
 var _skipped: bool = false
 var _done: bool = false
+var _active_tween: Tween
 
 
 func _ready() -> void:
@@ -38,7 +39,11 @@ func _ready() -> void:
 	lore.text = LORE_TEXT
 	lore.modulate.a = 0.0
 	fade.color = Color(0, 0, 0, 1)
-	skip_l.visible = true
+	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	skip_btn.visible = true
+	skip_btn.pressed.connect(_skip)
+	RtpUi.apply_button_styles(skip_btn)
+	skip_btn.grab_focus()
 	_run_sequence()
 
 
@@ -48,42 +53,48 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+func _kill_tween() -> void:
+	if _active_tween and _active_tween.is_valid():
+		_active_tween.kill()
+	_active_tween = null
+
+
 func _skip() -> void:
-	if _skipped:
+	if _skipped or _done:
 		return
 	_skipped = true
 	AudioManager.sfx_ui_confirm()
+	_kill_tween()
 	_finish()
 
 
 func _run_sequence() -> void:
-	_busy = true
-	## Fade in
-	var tw := create_tween()
-	tw.tween_property(fade, "color:a", 0.0, 1.4)
-	await tw.finished
+	_active_tween = create_tween()
+	_active_tween.tween_property(fade, "color:a", 0.0, 1.4)
+	await _active_tween.finished
 	if _skipped:
 		return
-	## Texto sobe e some
+
 	var view_h := get_viewport_rect().size.y
 	lore.position.y = view_h * 0.58
 	lore.modulate.a = 0.0
-	var scroll := create_tween()
-	scroll.set_parallel(true)
-	scroll.tween_property(lore, "modulate:a", 1.0, 1.2)
-	scroll.tween_property(lore, "position:y", view_h * 0.10, 10.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	_active_tween = create_tween()
+	_active_tween.set_parallel(true)
+	_active_tween.tween_property(lore, "modulate:a", 1.0, 1.2)
+	_active_tween.tween_property(lore, "position:y", view_h * 0.10, 10.0).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	await get_tree().create_timer(7.5).timeout
 	if _skipped:
 		return
-	var fade_text := create_tween()
-	fade_text.tween_property(lore, "modulate:a", 0.0, 2.0)
-	await fade_text.finished
+
+	_active_tween = create_tween()
+	_active_tween.tween_property(lore, "modulate:a", 0.0, 2.0)
+	await _active_tween.finished
 	if _skipped:
 		return
-	## Fade out
-	var out := create_tween()
-	out.tween_property(fade, "color:a", 1.0, 1.2)
-	await out.finished
+
+	_active_tween = create_tween()
+	_active_tween.tween_property(fade, "color:a", 1.0, 1.2)
+	await _active_tween.finished
 	if _skipped:
 		return
 	_finish()
@@ -93,5 +104,5 @@ func _finish() -> void:
 	if _done:
 		return
 	_done = true
-	_busy = false
+	_kill_tween()
 	SceneRouter.go_mylune()
