@@ -31,3 +31,16 @@ python scripts/tools/generate_tilesets.py
 ```
 
 No editor Godot: abra `village.tres` → painel TileSet para pintar no `TileMapLayer` da vila.
+
+## Camadas do mapa (importante)
+
+Cada `TileMapLayer` guarda **um tile por célula**. Se pintar árvore no mesmo layer do chão, o chão some.
+
+Nas cenas `mylune_forest.tscn` e `village.tscn`:
+
+| Nó | Uso |
+|----|-----|
+| `World/TileMap` | Só terreno (A5 / A2) |
+| `World/Props` | Árvores, pedras, cercas (Outside_B / C) |
+
+Fluxo: selecione o nó **Props** → Paint → source 2 ou 3 → pinte a árvore. O chão em `TileMap` permanece.

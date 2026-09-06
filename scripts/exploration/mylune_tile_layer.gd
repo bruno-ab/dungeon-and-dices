@@ -1,6 +1,6 @@
 extends TileMapLayer
 
-## Floresta de Mylune — usa o TileSet da cena.
+## Floresta de Mylune — camada de CHÃO (A5/A2). Árvores/props vão em `World/Props`.
 ## Por padrão NÃO redesenha no play (respeita pintura do editor).
 ## Marque `auto_paint_on_ready` só se quiser o layout procedural de novo.
 

@@ -1,6 +1,6 @@
 extends TileMapLayer
 
-## Chão da Vila de Cinzas usando `assets/tilesets/village.tres`.
+## Chão da Vila de Cinzas (`World/TileMap`). Props (B/C) vão em `World/Props`.
 ## Sources: 0=A5 chão · 1=A2 terreno · 2=B props · 3=C props · 4=A1 água
 
 ## Por padrão NÃO redesenha no play (respeita pintura do editor).

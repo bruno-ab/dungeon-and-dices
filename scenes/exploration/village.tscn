@@ -30,6 +30,10 @@ tile_map_data = PackedByteArray("AAAMAAkAAQABAAMAAAAMAAoAAQABAAQAAAANAAoAAQAAAAQ
 tile_set = ExtResource("8_tileset")
 script = ExtResource("7_tiles")
 
+[node name="Props" type="TileMapLayer" parent="World"]
+z_index = -1
+tile_set = ExtResource("8_tileset")
+
 [node name="Title" type="Label" parent="World" unique_id=1458696867]
 offset_left = 560.0
 offset_top = 40.0
