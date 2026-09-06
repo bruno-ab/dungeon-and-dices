@@ -94,4 +94,4 @@ func _finish() -> void:
 		return
 	_done = true
 	_busy = false
-	SceneRouter.go_village()
+	SceneRouter.go_mylune()

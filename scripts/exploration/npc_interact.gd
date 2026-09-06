@@ -89,10 +89,11 @@ func _start_battle() -> void:
 	if id == "cemiterio" and GameState.cleared_cemiterio:
 		_talk("Ruínas", PackedStringArray(["O golem jaz entre as sucatas."]))
 		return
-	if not GameState.met_elder:
+	if not GameState.met_elder and id != "mylune":
 		_talk("?", PackedStringArray(["Fale com Magus na praça antes de partir."]))
 		return
-	SceneRouter.go_battle(id)
+	var spawn := "combat" if id == "mylune" else "gate"
+	SceneRouter.go_battle(id, spawn)
 
 
 func _talk(speaker: String, lines: PackedStringArray, on_finished: Callable = Callable()) -> void:

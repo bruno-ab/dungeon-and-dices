@@ -43,15 +43,11 @@ Mapeamento em `SpriteCatalog.portrait()` — rostos não precisam coincidir; só
 
 `scripts/ui/rtp_ui.gd` aplica `Graphics/System/Window.png` em painéis/botões (menu + diálogo).
 
-## Mapa da vila
+## Mapa da vila / floresta
 
-TileSets configurados em `assets/tilesets/`:
-
-- `village.tres` — fontes A5/A2/B/C/A1 (32×32)
-- `outside_*.tres` — cada sheet isolada
-- Regenerar: `python scripts/tools/generate_tilesets.py`
-
-A cena `village.tscn` referencia `village.tres` no `TileMapLayer`.
+- **Mapa inicial:** `scenes/exploration/mylune_forest.tscn` (após intro)
+- Vila: `village.tscn` — portal oeste ↔ Mylune
+- TileSets: `assets/tilesets/village.tres`
 
 ## Código
 

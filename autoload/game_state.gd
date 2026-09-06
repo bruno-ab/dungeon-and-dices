@@ -25,6 +25,7 @@ var recruited_magus: bool = false
 var battles_won: int = 0
 var last_battle_result: String = ""
 var pending_encounter: String = "trilha"
+var return_scene: String = "" ## volta para esta cena após batalha
 
 ## skill_id -> true
 var unlocked_skills: Dictionary = {}
@@ -40,7 +41,7 @@ var phase1_trail_cleared: bool = false
 var cleared_mylune: bool = false
 var cleared_trilha: bool = false
 var cleared_cemiterio: bool = false
-var spawn_point: String = "plaza"
+var spawn_point: String = "start"
 
 const XP_PER_LEVEL := 20
 const GAME_TITLE := "Dado & Lâmina"
@@ -66,14 +67,15 @@ func reset_run() -> void:
 	recruited_magus = false
 	battles_won = 0
 	last_battle_result = ""
-	pending_encounter = "trilha"
+	pending_encounter = "mylune"
+	return_scene = ""
 	phase = 1
 	met_elder = false
 	phase1_trail_cleared = false
 	cleared_mylune = false
 	cleared_trilha = false
 	cleared_cemiterio = false
-	spawn_point = "plaza"
+	spawn_point = "start"
 	grant_class_seed(&"warrior")
 	_recompute_from_skills()
 	party_changed.emit()
@@ -379,6 +381,8 @@ func party_summary() -> String:
 func quest_text() -> String:
 	if cleared_cemiterio:
 		return "Os três caminhos foram limpos. Fale com Magus na praça."
+	if not cleared_mylune and not met_elder:
+		return "Objetivo: explore a Floresta de Mylune — ou siga à Vila de Cinzas."
 	if not met_elder:
 		return "Objetivo: fale com Magus na praça da Vila de Cinzas."
 	var parts: PackedStringArray = []
@@ -387,7 +391,7 @@ func quest_text() -> String:
 	if not recruited_magus:
 		parts.append("recrute Magus para a party")
 	if not cleared_mylune:
-		parts.append("limpe Mylune (oeste)")
+		parts.append("limpe Mylune (clareira)")
 	if not cleared_trilha:
 		parts.append("limpe a Trilha Sombria (leste)")
 	if not cleared_cemiterio:

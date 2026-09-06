@@ -27,7 +27,7 @@ func _on_start_pressed() -> void:
 
 func _on_continue_pressed() -> void:
 	AudioManager.sfx_ui_confirm()
-	SceneRouter.go_village()
+	SceneRouter.go_mylune()
 
 
 func _on_quit_pressed() -> void:

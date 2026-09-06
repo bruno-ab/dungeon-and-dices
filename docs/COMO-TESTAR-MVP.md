@@ -9,13 +9,12 @@
 
 ```
 Menu (Start Game)
-  → Vila de Cinzas (Mittelerd / lore Pot)
-       → Magus (missão + recruta Mago)
-       → Mira (recruta Druida)
-       → Estalagem (cura)
-       → Mylune (oeste) — Guard/Dodge/Counter
-       → Trilha Sombria (leste) — Counterspell
-       → Cemitério dos Metais (norte) — combate misto
+  → Intro (lore)
+  → Floresta de Mylune (mapa inicial)
+       → Clareira das Serpentes (combate Mylune)
+       → Trilha → Vila de Cinzas
+            → Magus / Mira / Estalagem
+            → Trilha Sombria / Cemitério
   → Magus encerra a fase após os 3 combates
 ```
 
