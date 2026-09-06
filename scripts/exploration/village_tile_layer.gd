@@ -3,6 +3,10 @@ extends TileMapLayer
 ## Chão da Vila de Cinzas usando `assets/tilesets/village.tres`.
 ## Sources: 0=A5 chão · 1=A2 terreno · 2=B props · 3=C props · 4=A1 água
 
+## Por padrão NÃO redesenha no play (respeita pintura do editor).
+@export var auto_paint_on_ready: bool = false
+@export var paint_if_empty: bool = true
+
 const MAP_W := 50
 const MAP_H := 34
 
@@ -29,7 +33,9 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	if tile_set == null:
 		tile_set = load("res://assets/tilesets/village.tres") as TileSet
-	_paint_village()
+	var empty := get_used_cells().is_empty()
+	if auto_paint_on_ready or (paint_if_empty and empty):
+		_paint_village()
 
 
 func _paint_village() -> void:
