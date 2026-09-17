@@ -80,7 +80,7 @@ text = "Start Game"
 [node name="ContinueBtn" type="Button" parent="Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "Continuar (mesma sessão)"
+text = "Continuar"
 
 [node name="QuitBtn" type="Button" parent="Center/Panel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 40)

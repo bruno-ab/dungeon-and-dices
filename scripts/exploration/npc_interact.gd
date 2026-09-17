@@ -3,7 +3,7 @@ extends Area2D
 ## NPC / ponto de interação — diálogos VN ou ações de exploração.
 
 @export var prompt_text: String = "E — Falar"
-@export_enum("vn", "dialogue", "recruit", "heal", "battle", "elder", "complete") var mode: String = "vn"
+@export_enum("vn", "dialogue", "recruit", "heal", "battle", "elder", "complete", "dungeon", "exit_dungeon") var mode: String = "vn"
 @export var speaker_name: String = "Aldeão"
 @export var dialogue_id: String = "" ## JSON em data/dialogue/
 @export var dialogue_lines: PackedStringArray = PackedStringArray(["..."])
@@ -54,6 +54,12 @@ func _activate() -> void:
 			_start_vn()
 		"battle":
 			_start_battle()
+		"dungeon":
+			_enter_dungeon()
+		"exit_dungeon":
+			GameState.spawn_point = "gate"
+			GameState.save_game()
+			SceneRouter.go_village()
 		"complete":
 			if GameState.all_encounters_cleared():
 				SceneRouter.go_phase_complete()
@@ -66,6 +72,17 @@ func _activate() -> void:
 				_talk(speaker_name, dialogue_lines)
 		_:
 			_talk(speaker_name, dialogue_lines)
+
+
+func _enter_dungeon() -> void:
+	if GameState.cleared_cemiterio:
+		_talk("Ruínas", PackedStringArray(["A cripta está quieta. O golem jaz entre as sucatas."]))
+		return
+	if not GameState.met_elder:
+		_talk("?", PackedStringArray(["Fale com Magus na praça antes de partir."]))
+		return
+	GameState.save_game()
+	SceneRouter.go_dungeon()
 
 
 func _start_vn() -> void:
@@ -89,9 +106,18 @@ func _start_battle() -> void:
 	if id == "cemiterio" and GameState.cleared_cemiterio:
 		_talk("Ruínas", PackedStringArray(["O golem jaz entre as sucatas."]))
 		return
+	if id == "cripta" and GameState.dungeon_room_cleared:
+		_talk("Cripta", PackedStringArray(["Os autômatos já foram desativados."]))
+		return
 	if not GameState.met_elder:
 		_talk("?", PackedStringArray(["Fale com Magus na praça antes de partir."]))
 		return
+	if GameState.location == "dungeon":
+		if id == "cripta":
+			GameState.spawn_point = "dungeon_mid"
+		elif id == "cemiterio":
+			GameState.spawn_point = "dungeon_boss"
+	GameState.save_game()
 	SceneRouter.go_battle(id)
 
 

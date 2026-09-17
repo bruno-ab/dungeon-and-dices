@@ -1,4 +1,4 @@
-# Como jogar — Dado & Lâmina (Godot 4.7)
+# Como jogar — Dado & Lâmina (Godot 4.7) · MVP 0.3.0
 
 ## Abrir
 
@@ -8,15 +8,16 @@
 ## Fluxo
 
 ```
-Menu (Start Game)
+Menu (Start Game / Continuar com save)
   → Vila de Cinzas (Mittelerd / lore Pot)
        → Magus (missão + recruta Mago)
-       → Mira (recruta Druida)
+       → Mira (recrute Druida)
        → Estalagem (cura)
        → Mylune (oeste) — Guard/Dodge/Counter
        → Trilha Sombria (leste) — Counterspell
-       → Cemitério dos Metais (norte) — combate misto
-  → Magus encerra a fase após os 3 combates
+       → Cripta dos Metais (norte) — dungeon
+            → Ante-sala (Autômato) → Câmara do Golem (boss)
+  → Magus encerra a fase após limpar os 3 caminhos
 ```
 
 ## Classes
@@ -24,34 +25,32 @@ Menu (Start Game)
 | Classe | Personagem | Dado | Destaque |
 |--------|------------|------|----------|
 | Guerreiro | Otto | d10 | Lâmina Severa, Guard |
-| Druida | Mira | d6 | Magia / Semente |
-| Mago | Magus | d8 / janela d4 | Contra-feitiço |
+| Druida | Mira | d6 / d12 urso / d8 pantera | botão **Forma** |
+| Mago | Magus | d8 | Contra-feitiço + reflexo d4 |
 
 ## Controles (combate)
 
 | Ação | Tecla / UI |
 |------|------------|
 | Habilidade | botão central |
-| Magia / Item | botões |
+| Magia / Item / Forma | botões |
 | Guardar | **G** ou botão (turno ou reação) |
 | Esquivar | **H** |
 | Contra-atacar | **J** |
 | Contra-feitiço | **U** |
-| Timing genérico | **Espaço** |
+| Timing genérico | **Espaço** (também no telegraph) |
 | Árvore de Skills | **Tab** / **T** |
+| Pause / salvar | **Esc** |
 
-## Lore
+## Save
 
-Ver `docs/lore-mittelerd.md` (adaptado do projeto Pot).
+- Slot único: `user://dado_lamina_slot0.json`
+- Autosave: vitória, pause, entrar/sair da cripta, menu
 
-## Áudio
+## Lore / áudio / skills / diálogo
 
-Ver `docs/AUDIO.md`. BGM muda por cena; combate tem SFX de ataque, magia e reações.
-
-## Skills
-
-Ver `docs/SKILL-TREE.md`. Gaste SP na árvore (não mais nas teclas 1/2).
-
-## Diálogo (Visual Novel)
-
-Ver `docs/DIALOGUE-VN.md`. Fale várias vezes com Magus, Mira, Estalajadeira e o Aldeão — há escolhas e ramos.
+- `docs/lore-mittelerd.md`
+- `docs/AUDIO.md`
+- `docs/SKILL-TREE.md`
+- `docs/DIALOGUE-VN.md`
+- Changelog MVP: `docs/17-9-2026.md`

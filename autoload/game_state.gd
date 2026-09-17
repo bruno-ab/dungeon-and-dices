@@ -41,10 +41,19 @@ var cleared_mylune: bool = false
 var cleared_trilha: bool = false
 var cleared_cemiterio: bool = false
 var spawn_point: String = "plaza"
+## village | dungeon — para retorno pós-combate e save
+var location: String = "village"
+var gold: int = 0
+## item_id -> quantidade
+var inventory: Dictionary = {}
+var dungeon_room_cleared: bool = false
+var reaction_buffer: float = 0.08
 
 const XP_PER_LEVEL := 20
 const GAME_TITLE := "Dado & Lâmina"
 const BASE_MAX_HP := 42
+const SAVE_PATH := "user://dado_lamina_slot0.json"
+const SAVE_VERSION := 1
 
 
 func reset_run() -> void:
@@ -74,11 +83,160 @@ func reset_run() -> void:
 	cleared_trilha = false
 	cleared_cemiterio = false
 	spawn_point = "plaza"
+	location = "village"
+	gold = 10
+	inventory = {"pocao": 2, "semente": 1}
+	dungeon_room_cleared = false
+	reaction_buffer = 0.08
 	_recompute_from_skills()
 	party_changed.emit()
 	skill_points_changed.emit(skill_points)
 	skills_changed.emit()
 	quest_updated.emit(quest_text())
+
+
+func to_dict() -> Dictionary:
+	return {
+		"version": SAVE_VERSION,
+		"player_name": player_name,
+		"player_level": player_level,
+		"player_xp": player_xp,
+		"skill_points": skill_points,
+		"max_hp": max_hp,
+		"current_hp": current_hp,
+		"dice_count": dice_count,
+		"dice_sides": dice_sides,
+		"unlocked_skills": unlocked_skills.duplicate(),
+		"dialogue_flags": dialogue_flags.duplicate(),
+		"npc_talks": npc_talks.duplicate(),
+		"recruited_mira": recruited_mira,
+		"recruited_magus": recruited_magus,
+		"battles_won": battles_won,
+		"pending_encounter": pending_encounter,
+		"phase": phase,
+		"met_elder": met_elder,
+		"phase1_trail_cleared": phase1_trail_cleared,
+		"cleared_mylune": cleared_mylune,
+		"cleared_trilha": cleared_trilha,
+		"cleared_cemiterio": cleared_cemiterio,
+		"spawn_point": spawn_point,
+		"location": location,
+		"gold": gold,
+		"inventory": inventory.duplicate(),
+		"dungeon_room_cleared": dungeon_room_cleared,
+		"reaction_buffer": reaction_buffer,
+	}
+
+
+func from_dict(data: Dictionary) -> void:
+	player_name = str(data.get("player_name", "Otto"))
+	player_level = int(data.get("player_level", 1))
+	player_xp = int(data.get("player_xp", 0))
+	skill_points = int(data.get("skill_points", 0))
+	max_hp = int(data.get("max_hp", BASE_MAX_HP))
+	current_hp = int(data.get("current_hp", max_hp))
+	dice_count = int(data.get("dice_count", 1))
+	dice_sides = int(data.get("dice_sides", 10))
+	unlocked_skills = (data.get("unlocked_skills", {}) as Dictionary).duplicate()
+	dialogue_flags = (data.get("dialogue_flags", {}) as Dictionary).duplicate()
+	npc_talks = (data.get("npc_talks", {}) as Dictionary).duplicate()
+	recruited_mira = bool(data.get("recruited_mira", false))
+	recruited_magus = bool(data.get("recruited_magus", false))
+	battles_won = int(data.get("battles_won", 0))
+	pending_encounter = str(data.get("pending_encounter", "trilha"))
+	phase = int(data.get("phase", 1))
+	met_elder = bool(data.get("met_elder", false))
+	phase1_trail_cleared = bool(data.get("phase1_trail_cleared", false))
+	cleared_mylune = bool(data.get("cleared_mylune", false))
+	cleared_trilha = bool(data.get("cleared_trilha", false))
+	cleared_cemiterio = bool(data.get("cleared_cemiterio", false))
+	spawn_point = str(data.get("spawn_point", "plaza"))
+	location = str(data.get("location", "village"))
+	gold = int(data.get("gold", 0))
+	inventory = (data.get("inventory", {"pocao": 1}) as Dictionary).duplicate()
+	dungeon_room_cleared = bool(data.get("dungeon_room_cleared", false))
+	reaction_buffer = float(data.get("reaction_buffer", 0.08))
+	last_battle_result = ""
+	_recompute_from_skills()
+	party_changed.emit()
+	skill_points_changed.emit(skill_points)
+	skills_changed.emit()
+	quest_updated.emit(quest_text())
+
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+
+func save_game() -> bool:
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		log_message.emit("Falha ao salvar.")
+		return false
+	file.store_string(JSON.stringify(to_dict(), "\t"))
+	log_message.emit("Jogo salvo.")
+	return true
+
+
+func load_game() -> bool:
+	if not has_save():
+		return false
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		return false
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	from_dict(parsed as Dictionary)
+	return true
+
+
+func add_item(item_id: String, amount: int = 1) -> void:
+	if amount <= 0 or item_id == "":
+		return
+	inventory[item_id] = int(inventory.get(item_id, 0)) + amount
+
+
+func consume_item(item_id: String, amount: int = 1) -> bool:
+	var have := int(inventory.get(item_id, 0))
+	if have < amount:
+		return false
+	have -= amount
+	if have <= 0:
+		inventory.erase(item_id)
+	else:
+		inventory[item_id] = have
+	return true
+
+
+func item_count(item_id: String) -> int:
+	return int(inventory.get(item_id, 0))
+
+
+func combat_item_bag() -> Array[String]:
+	var out: Array[String] = []
+	for id in inventory.keys():
+		for _i in item_count(str(id)):
+			out.append(str(id))
+			if out.size() >= 6:
+				return out
+	return out
+
+
+func apply_loot(loot: Dictionary) -> String:
+	var parts: PackedStringArray = []
+	var g := int(loot.get("gold", 0))
+	if g > 0:
+		gold += g
+		parts.append("+%d ouro" % g)
+	var items: Dictionary = loot.get("items", {}) as Dictionary
+	for id in items.keys():
+		var qty := int(items[id])
+		add_item(str(id), qty)
+		parts.append("+%dx %s" % [qty, str(id)])
+	if parts.is_empty():
+		return ""
+	return ", ".join(parts)
 
 
 func heal_full() -> void:
@@ -326,7 +484,7 @@ func quest_text() -> String:
 	if not cleared_trilha:
 		parts.append("limpe a Trilha Sombria (leste)")
 	if not cleared_cemiterio:
-		parts.append("derrote o Golem no Cemitério (norte)")
+		parts.append("explore a Cripta dos Metais (norte) e derrote o Golem")
 	if parts.is_empty():
 		return "Fale com Magus para encerrar a fase."
 	return "Objetivo: " + ", ".join(parts) + "."
@@ -353,10 +511,13 @@ func mark_encounter_cleared(id: String) -> void:
 		"trilha":
 			mark_trail_cleared()
 			return
+		"cripta":
+			dungeon_room_cleared = true
+			log_message.emit("Ante-sala da cripta limpa.")
 		"cemiterio":
 			cleared_cemiterio = true
 			phase1_trail_cleared = true
-			log_message.emit("O Golem caiu no Cemitério dos Metais.")
+			log_message.emit("O Golem caiu na Cripta dos Metais.")
 	quest_updated.emit(quest_text())
 
 

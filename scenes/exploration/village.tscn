@@ -292,9 +292,9 @@ position = Vector2(820, 120)
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("4_npc")
-prompt_text = "E — Cemitério dos Metais"
-mode = "battle"
-speaker_name = "Cemitério"
+prompt_text = "E — Entrar na Cripta dos Metais"
+mode = "dungeon"
+speaker_name = "Cripta"
 encounter_id = "cemiterio"
 
 [node name="Sprite" type="Polygon2D" parent="World/NPCs/CemiterioGate"]

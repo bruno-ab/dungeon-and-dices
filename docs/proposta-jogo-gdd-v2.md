@@ -1,10 +1,10 @@
 # Dungeon and Dices — Documento de Concepção do Jogo (GDD V2)
 
-**Título de trabalho:** Dungeon and Dices  
+**Título de trabalho:** Dado & Lâmina (Dungeon and Dices)  
 **Gênero:** RPG de turnos 2D (Pixel Art HD)  
-**Engine alvo:** Godot 4.x  
-**Versão do documento:** 2.0  
-**Status:** Concepção / pré-protótipo  
+**Engine alvo:** Godot 4.7.2  
+**Versão do documento:** 2.1  
+**Status:** MVP jogável (Fase 1 — Vila de Cinzas + Cripta)  
 
 ---
 
@@ -195,24 +195,29 @@ Direção de arte: Pixel Art 2D HD, iluminação dinâmica, tom sóbrio, câmera
 | Pixel Art HD + shaders caros | Budget de draw calls; atlases; perfil com skill de optimization |
 | Nome / IP vibe vs. originalidade | Universo próprio; referências só como “feeling”, não como cópia |
 
-### Decisões pendentes
+### Decisões fechadas (MVP)
 
-- [ ] Nome definitivo do jogo e do mundo  
-- [ ] Tom narrativo (tragédia esperançosa? fatalismo? humor seco?)  
-- [ ] Tamanho da party em batalha (3 vs 4)  
-- [ ] Controles: teclado/gamepad first  
-- [ ] Godot 4.3 vs 4.4+ como versão mínima  
+- [x] Nome de exibição: **Dado & Lâmina** (mundo Mittelerd)  
+- [x] Tom: tragédia esperançosa / melancolia sóbria  
+- [x] Party em batalha: até 3 (Otto + Mira + Magus)  
+- [x] Controles: teclado first (gamepad pós-MVP)  
+- [x] Godot **4.7.2** como versão do projeto  
+
+### Decisões ainda abertas (pós-MVP)
+
+- [ ] Gamepad first / rebind completo  
+- [ ] Party size 4  
+- [ ] Crafting e inventário avançado  
 
 ---
 
 ## 9. Próximos Passos
 
-1. Congelar MVP vertical slice (seção 5).  
-2. Criar projeto Godot 4 com estrutura de pastas (`scenes/`, `scripts/`, `resources/`, `assets/`).  
-3. Prototipar **só** combate: turno + Dodge/Parry + 1 dado (Guerreiro d10).  
-4. Prototipar exploração mínima + 1 evento de recrutamento.  
-5. Expandir Dice Engine e Skill Tree quando o feeling de combate estiver certo.  
+1. ~~Congelar MVP vertical slice (seção 5).~~ ✅ `docs/17-9-2026.md`  
+2. ~~Projeto Godot + combate + exploração + recrutamento.~~ ✅  
+3. Pós-MVP: tileset real, animações hit/cast/death, boss patterns, gamepad.  
+4. Expandir conteúdo (Fase 2) sem quebrar save `SAVE_VERSION`.  
 
 ---
 
-*Documento gerado a partir da concepção V2 do time. Atualizar este arquivo conforme o protótipo validar (ou invalidar) hipóteses.*
+*Documento atualizado com o MVP 0.3.0 (17/9/2026).*

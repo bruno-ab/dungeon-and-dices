@@ -1,5 +1,7 @@
 extends Node2D
 
+## Cripta dos Metais — dungeon curta do MVP (ante-sala + boss).
+
 @onready var hud: Label = %Hud
 @onready var quest: Label = %Quest
 @onready var toast: Label = %Toast
@@ -7,12 +9,9 @@ extends Node2D
 
 
 func _ready() -> void:
+	GameState.location = "dungeon"
 	AudioManager.bgm_village()
 	GameState.log_message.connect(_on_log)
-	GameState.party_changed.connect(_refresh_hud)
-	GameState.xp_gained.connect(func(_a, _l): _refresh_hud())
-	GameState.skill_points_changed.connect(func(_p): _refresh_hud())
-	GameState.skills_changed.connect(_refresh_hud)
 	GameState.quest_updated.connect(_on_quest)
 	_place_player()
 	_refresh_hud()
@@ -21,52 +20,51 @@ func _ready() -> void:
 
 
 func _place_player() -> void:
-	var marker_name := "SpawnPlaza"
+	var marker_name := "SpawnEntrance"
 	match GameState.spawn_point:
-		"gate":
-			marker_name = "SpawnGate"
-		"inn":
-			marker_name = "SpawnInn"
+		"dungeon_boss":
+			marker_name = "SpawnBoss"
+		"dungeon_mid":
+			marker_name = "SpawnMid"
 		_:
-			marker_name = "SpawnPlaza"
+			marker_name = "SpawnEntrance"
 	var marker := get_node_or_null("World/Spawns/%s" % marker_name)
 	if marker and player:
 		player.global_position = marker.global_position
-	GameState.spawn_point = "plaza"
+	GameState.spawn_point = "dungeon_entrance"
 
 
 func _handle_return_from_battle() -> void:
 	match GameState.last_battle_result:
 		"victory":
 			AudioManager.play_ui("Bell1")
-			_on_log("Você retorna à Vila de Cinzas. %s" % GameState.quest_text())
-			if GameState.skill_points > 0:
-				_on_log("Skill points disponíveis — pressione Tab.")
+			_on_log("Vitória na cripta. Ouro: %d · Poções: %d" % [
+				GameState.gold, GameState.item_count("pocao")
+			])
+			if GameState.cleared_cemiterio:
+				_on_log("O Golem caiu. Saia pela entrada sul ou fale com Magus na vila.")
 		"defeat":
 			GameState.heal_full()
-			_on_log("Você acordou na estalagem… HP cheio.")
-			var inn := get_node_or_null("World/Spawns/SpawnInn")
-			if inn and player:
-				player.global_position = inn.global_position
+			GameState.location = "village"
+			GameState.spawn_point = "inn"
+			GameState.last_battle_result = ""
+			SceneRouter.go_village()
+			return
 		"flee":
-			_on_log("Você recuou para a vila.")
+			_on_log("Você recuou na cripta.")
 	GameState.last_battle_result = ""
 
 
 func _refresh_hud() -> void:
 	hud.text = (
-		"%s  |  Nv %d  HP %d/%d  |  %dd%d  |  Ouro %d  |  SP %d  |  Vitórias %d\nParty: %s\nWASD mover · E falar · Tab árvore · Esc pause/salvar"
+		"%s  |  Nv %d  HP %d/%d  |  Ouro %d  |  Poções %d\nCripta dos Metais · E interagir · Esc pause / salvar"
 		% [
 			GameState.player_name,
 			GameState.player_level,
 			GameState.current_hp,
 			GameState.max_hp,
-			GameState.dice_count,
-			GameState.dice_sides,
 			GameState.gold,
-			GameState.skill_points,
-			GameState.battles_won,
-			GameState.party_summary(),
+			GameState.item_count("pocao"),
 		]
 	)
 
@@ -91,11 +89,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		GameState.save_game()
 		var dialog := AcceptDialog.new()
-		dialog.title = "Pause"
-		dialog.dialog_text = (
-			"Jogo salvo.\nSkill points: %d\nTab = Árvore de Skills\n\nOK fecha."
-			% GameState.skill_points
-		)
+		dialog.title = "Pause · Cripta"
+		dialog.dialog_text = "Jogo salvo.\nOK continua · Menu volta ao título."
 		dialog.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(dialog)
 		get_tree().paused = true
@@ -108,14 +103,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_tree().paused = false
 			dialog.queue_free()
 		)
-		dialog.add_button("Árvore de Skills", true, "skills")
 		dialog.add_button("Menu principal", true, "quit")
 		dialog.custom_action.connect(func(action: StringName):
-			if action == &"skills":
-				get_tree().paused = false
-				dialog.queue_free()
-				SkillTreeUI.open_tree()
-			elif action == &"quit":
+			if action == &"quit":
 				get_tree().paused = false
 				SceneRouter.go_main()
 		)

@@ -26,6 +26,9 @@ var guard_mitigation: float = 0.5
 var attack_kind: StringName = &"melee" ## melee | spell
 var level: int = 1
 var items: Array[String] = [] ## potion ids for Item menu
+var form: StringName = &"human" ## human | bear | panther (druida)
+var armor_class: int = 12
+var attack_bonus: int = 0
 
 
 func _init(
@@ -50,6 +53,8 @@ func _init(
 	flat_bonus = p_flat_bonus
 	color = p_color
 	skill_formula = "%dd%d" % [dice_count, dice_sides]
+	attack_bonus = flat_bonus
+	armor_class = 11 + level / 2
 
 
 func configure_class(p_class: StringName) -> void:
@@ -58,24 +63,66 @@ func configure_class(p_class: StringName) -> void:
 		"warrior":
 			dice_sides = 10
 			skill_name = "Lâmina Severa"
-			skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
 			max_mp = 8
 			color = Color(0.85, 0.35, 0.3)
+			armor_class = 13
 		"druid":
 			dice_sides = 6
 			skill_name = "Raiz de Mylune"
-			skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
 			max_mp = 18
 			color = Color(0.35, 0.75, 0.4)
+			armor_class = 12
+			form = &"human"
 		"mage":
 			dice_sides = 8
 			skill_name = "Contra-Véu"
-			skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
 			max_mp = 24
 			color = Color(0.65, 0.45, 0.9)
+			armor_class = 11
 		_:
-			pass
+			armor_class = 12
 	mp = max_mp
+	attack_bonus = flat_bonus + level / 3
+	_refresh_formula()
+
+
+func set_form(p_form: StringName) -> String:
+	if class_id != &"druid":
+		return "Só a druida troca de forma."
+	form = p_form
+	var msg := ""
+	match String(p_form):
+		"bear":
+			dice_sides = 12
+			skill_name = "Garra do Urso"
+			armor_class = 14
+			msg = "Mira assume Forma de Urso (d12)."
+		"panther":
+			dice_sides = 8
+			skill_name = "Presa da Pantera"
+			armor_class = 12
+			msg = "Mira assume Forma de Pantera (d8)."
+		_:
+			form = &"human"
+			dice_sides = 6
+			skill_name = "Raiz de Mylune"
+			armor_class = 12
+			msg = "Mira volta à forma humana (d6)."
+	_refresh_formula()
+	return msg
+
+
+func cycle_form() -> String:
+	match String(form):
+		"human":
+			return set_form(&"bear")
+		"bear":
+			return set_form(&"panther")
+		_:
+			return set_form(&"human")
+
+
+func _refresh_formula() -> void:
 	skill_formula = "%dd%d + %d" % [dice_count, dice_sides, flat_bonus]
 
 
@@ -111,8 +158,10 @@ func restore_mp(amount: int) -> void:
 	mp_changed.emit(mp, max_mp)
 
 
-func attack_roll(rng: RandomNumberGenerator) -> Dictionary:
-	return DiceEngine.roll_damage(dice_count, dice_sides, flat_bonus, rng)
+func attack_roll(rng: RandomNumberGenerator, target_ac: int = 12) -> Dictionary:
+	return DiceEngine.full_attack(
+		dice_count, dice_sides, flat_bonus, attack_bonus, target_ac, rng
+	)
 
 
 func class_label() -> String:
@@ -120,7 +169,13 @@ func class_label() -> String:
 		"warrior":
 			return "Guerreiro"
 		"druid":
-			return "Druida"
+			match String(form):
+				"bear":
+					return "Druida · Urso"
+				"panther":
+					return "Druida · Pantera"
+				_:
+					return "Druida"
 		"mage":
 			return "Mago"
 		_:

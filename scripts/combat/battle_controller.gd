@@ -7,6 +7,7 @@ signal ui_refresh
 signal player_actions_enabled(enabled: bool)
 signal reaction_started(window: ReactionWindow)
 signal reaction_ended(result: ReactionWindow.Result)
+signal telegraph_started(kind: StringName, attacker_name: String)
 signal battle_finished(won: bool)
 signal timeline_changed(order: Array)
 signal skill_preview(name: String, formula: String)
@@ -81,7 +82,7 @@ func _make_otto() -> Combatant:
 	c.level = GameState.player_level
 	c.sprite_key = "otto"
 	c.configure_class(&"warrior")
-	c.items = ["pocao"]
+	c.items = GameState.combat_item_bag()
 	c.flat_bonus = 2 + GameState.player_level / 2
 	c.configure_class(&"warrior")
 	GameState.apply_combatant_skills(c)
@@ -93,7 +94,7 @@ func _make_mira() -> Combatant:
 	c.sprite_key = "lyra"
 	c.level = GameState.player_level
 	c.configure_class(&"druid")
-	c.items = ["pocao", "semente"]
+	c.items = ["semente"] if GameState.item_count("semente") > 0 else []
 	GameState.apply_combatant_skills(c)
 	return c
 
@@ -103,7 +104,7 @@ func _make_magus() -> Combatant:
 	c.sprite_key = "kelvin"
 	c.level = GameState.player_level
 	c.configure_class(&"mage")
-	c.items = ["pocao"]
+	c.items = []
 	GameState.apply_combatant_skills(c)
 	return c
 
@@ -183,10 +184,15 @@ func _check_end() -> bool:
 		GameState.mark_encounter_cleared(encounter_id)
 		var xp := EncounterCatalog.xp_reward(encounter_id)
 		GameState.grant_xp(xp)
+		var loot_txt := GameState.apply_loot(EncounterCatalog.loot_reward(encounter_id))
 		AudioManager.stop_bgs()
 		AudioManager.bgm_victory_stinger()
 		AudioManager.me_victory()
-		battle_log.emit("Vitória! +%d XP." % xp)
+		if loot_txt != "":
+			battle_log.emit("Vitória! +%d XP. Loot: %s." % [xp, loot_txt])
+		else:
+			battle_log.emit("Vitória! +%d XP." % xp)
+		GameState.save_game()
 		battle_finished.emit(true)
 		ui_refresh.emit()
 		return true
@@ -260,16 +266,26 @@ func player_attack(target_id: StringName = &"") -> void:
 		return
 	busy = true
 	AudioManager.sfx_attack()
-	var roll := current.attack_roll(rng)
+	var roll := current.attack_roll(rng, target.armor_class)
+	last_roll_label = str(roll["label"])
+	if not bool(roll["hit"]):
+		AudioManager.sfx_miss()
+		battle_log.emit(
+			"ROLANDO… %s erra [%s] em %s — %s"
+			% [current.display_name, current.skill_name, target.display_name, roll["label"]]
+		)
+		ui_refresh.emit()
+		busy = false
+		notify_player_action_finished()
+		return
 	var dmg: int = int(roll["total"])
-	# ambiente: TERRA reforça guerreiro, FOGO mago, GELO druida
 	dmg += _env_bonus_for(current)
 	target.take_damage(dmg)
 	AudioManager.sfx_damage()
-	last_roll_label = str(roll["label"])
+	var crit_tag := " CRÍTICO!" if bool(roll["crit"]) else ""
 	battle_log.emit(
-		"ROLANDO DADOS… %s usa [%s] em %s — %s (+amb %d) = %d"
-		% [current.display_name, current.skill_name, target.display_name, roll["label"], _env_bonus_for(current), dmg]
+		"ROLANDO DADOS… %s usa [%s] em %s — %s (+amb %d) = %d%s"
+		% [current.display_name, current.skill_name, target.display_name, roll["label"], _env_bonus_for(current), dmg, crit_tag]
 	)
 	ui_refresh.emit()
 	busy = false
@@ -290,6 +306,22 @@ func player_guard() -> void:
 		"%s GUARDA (janela d6 → %s). Próximo dano reduzido. +%d HP."
 		% [current.display_name, roll["label"], heal_amt]
 	)
+	ui_refresh.emit()
+	busy = false
+	notify_player_action_finished()
+
+
+func player_cycle_form() -> void:
+	if phase != Phase.PLAYER_TURN or busy or current == null:
+		return
+	if current.class_id != &"druid":
+		battle_log.emit("Somente Mira pode mudar de forma.")
+		return
+	busy = true
+	AudioManager.sfx_magic()
+	var msg := current.cycle_form()
+	skill_preview.emit(current.skill_name, current.skill_formula)
+	battle_log.emit(msg)
 	ui_refresh.emit()
 	busy = false
 	notify_player_action_finished()
@@ -317,13 +349,20 @@ func player_cast_magic() -> void:
 	var sides := 8 if current.class_id == &"mage" else 6
 	if current.class_id == &"warrior":
 		sides = 10
-	var roll := DiceEngine.roll_damage(1, sides, current.flat_bonus + 2, rng)
+	var roll := DiceEngine.full_attack(1, sides, current.flat_bonus + 2, current.attack_bonus + 2, target.armor_class, rng)
+	last_roll_label = str(roll["label"])
+	if not bool(roll["hit"]):
+		AudioManager.sfx_miss()
+		battle_log.emit("%s falha a magia — %s (MP −%d)." % [current.display_name, roll["label"], cost])
+		ui_refresh.emit()
+		busy = false
+		notify_player_action_finished()
+		return
 	var dmg: int = int(roll["total"]) + _env_bonus_for(current)
 	if current.class_id == &"warrior" and GameState.warrior_magic_free():
 		dmg += 5
 	target.take_damage(dmg)
 	AudioManager.sfx_damage()
-	last_roll_label = str(roll["label"])
 	battle_log.emit("%s conjura MAGIA — %s (dano %d, MP −%d)." % [current.display_name, roll["label"], dmg, cost])
 	ui_refresh.emit()
 	busy = false
@@ -335,8 +374,11 @@ func player_use_item(item_id: String = "pocao") -> void:
 		return
 	if item_id not in current.items and not current.items.is_empty():
 		item_id = current.items[0]
-	if current.items.is_empty():
+	if current.items.is_empty() and GameState.item_count(item_id) <= 0:
 		battle_log.emit("%s não tem itens." % current.display_name)
+		return
+	if not GameState.consume_item(item_id) and item_id not in current.items:
+		battle_log.emit("Sem %s no inventário." % item_id)
 		return
 	busy = true
 	AudioManager.sfx_item()
@@ -394,13 +436,13 @@ func _enemy_act(enemy: Combatant) -> void:
 	elif enemy.id == &"golem":
 		enemy.skill_name = "Punho de Sucata"
 		kind = &"melee"
-	var roll := enemy.attack_roll(rng)
-	pending_damage = int(roll["total"])
+	var roll := enemy.attack_roll(rng, target.armor_class)
 	pending_attacker = enemy
 	pending_target = target
 	pending_attack_kind = kind
 	last_roll_label = str(roll["label"])
 	var kind_txt := "golpe" if kind == &"melee" else "feitiço"
+	telegraph_started.emit(kind, enemy.display_name)
 	if kind == &"spell":
 		AudioManager.play_sfx("Magic4", 0.95, -2.0)
 	else:
@@ -409,6 +451,29 @@ func _enemy_act(enemy: Combatant) -> void:
 		"%s prepara %s [%s] em %s! (%s)"
 		% [enemy.display_name, kind_txt, enemy.skill_name, target.display_name, roll["label"]]
 	)
+	var buffered_action: StringName = &""
+	var telegraph := 0.45
+	var t_elapsed := 0.0
+	while t_elapsed < telegraph:
+		if Input.is_action_just_pressed("react"):
+			buffered_action = &"auto"
+		if Input.is_action_just_pressed("react_guard"):
+			buffered_action = &"guard"
+		if Input.is_action_just_pressed("react_dodge"):
+			buffered_action = &"dodge"
+		if Input.is_action_just_pressed("react_counter"):
+			buffered_action = &"counter"
+		if Input.is_action_just_pressed("react_counterspell"):
+			buffered_action = &"counterspell"
+		t_elapsed += get_process_delta_time()
+		await get_tree().process_frame
+
+	if not bool(roll["hit"]):
+		AudioManager.sfx_miss()
+		battle_log.emit("%s erra o ataque! %s" % [enemy.display_name, roll["label"]])
+		return
+
+	pending_damage = int(roll["total"])
 	phase = Phase.REACTION
 	var mode := ReactionWindow.Mode.SPELL if kind == &"spell" else ReactionWindow.Mode.MELEE
 	reaction.begin(
@@ -416,8 +481,11 @@ func _enemy_act(enemy: Combatant) -> void:
 		GameState.parry_window_bonus,
 		mode,
 		GameState.dodge_window_bonus,
-		GameState.spell_window_bonus
+		GameState.spell_window_bonus,
+		GameState.reaction_buffer
 	)
+	if buffered_action != &"":
+		reaction.buffer_press(buffered_action)
 	reaction_started.emit(reaction)
 	while reaction.open:
 		if Input.is_action_just_pressed("react"):
@@ -442,6 +510,10 @@ func _enemy_act(enemy: Combatant) -> void:
 func register_reaction_choice(action: StringName) -> void:
 	if phase == Phase.REACTION and reaction.open:
 		reaction.register_press(action)
+	elif phase == Phase.ENEMY_TURN:
+		# telegraph ainda ativo — buffer via register no próximo begin não aplica;
+		# botões da UI usam buffer_press quando a janela abrir via battle_ui
+		pass
 
 
 func _resolve_reaction(result: ReactionWindow.Result) -> void:
@@ -467,12 +539,13 @@ func _resolve_reaction(result: ReactionWindow.Result) -> void:
 			AudioManager.sfx_counter()
 			var reduced := maxi(1, int(pending_damage * 0.15))
 			pending_target.take_damage(reduced)
-			var counter := pending_target.attack_roll(rng)
+			var counter := pending_target.attack_roll(rng, pending_attacker.armor_class)
 			var cdmg: int = int(float(counter["total"]) * GameState.counter_damage_mult(pending_target.class_id))
-			pending_attacker.take_damage(cdmg)
+			if bool(counter["hit"]):
+				pending_attacker.take_damage(maxi(1, cdmg))
 			battle_log.emit(
 				"Contra-ataque! Dano %d + retaliação %s (%d) sem gastar turno."
-				% [reduced, counter["label"], cdmg]
+				% [reduced, counter["label"], cdmg if bool(counter["hit"]) else 0]
 			)
 		ReactionWindow.Result.COUNTERSPELL:
 			AudioManager.sfx_counterspell()

@@ -1,7 +1,7 @@
 class_name ReactionWindow
 extends RefCounted
 
-## Janelas RT: Guard / Dodge / Counter / Counterspell.
+## Janelas RT: Guard / Dodge / Counter / Counterspell + input buffer.
 
 enum Result { MISS, DODGE, PARRY, PERFECT_PARRY, COUNTERSPELL, GUARD }
 enum Mode { MELEE, SPELL }
@@ -21,6 +21,8 @@ var spell_end: float = 0.55
 var pressed: bool = false
 var press_time: float = -1.0
 var chosen_action: StringName = &"auto"
+## Buffer: pressões um pouco cedo demais entram na janela
+var early_buffer: float = 0.08
 
 
 func begin(
@@ -28,10 +30,12 @@ func begin(
 	parry_bonus: float = 0.0,
 	p_mode: Mode = Mode.MELEE,
 	dodge_bonus: float = 0.0,
-	spell_bonus: float = 0.0
+	spell_bonus: float = 0.0,
+	p_buffer: float = 0.08
 ) -> void:
 	duration = p_duration
 	mode = p_mode
+	early_buffer = maxf(0.0, p_buffer)
 	parry_start = maxf(0.05, 0.22 - parry_bonus * 0.5)
 	parry_end = minf(duration - 0.05, 0.34 + parry_bonus)
 	perfect_start = parry_start + (parry_end - parry_start) * 0.35
@@ -64,10 +68,33 @@ func register_press(action: StringName = &"auto") -> void:
 		chosen_action = action
 
 
+## Pressão durante o telegraph (antes da janela) — aplica no início da janela.
+func buffer_press(action: StringName = &"auto") -> void:
+	if not pressed:
+		pressed = true
+		press_time = 0.0
+		chosen_action = action
+
+
+func _buffered_time() -> float:
+	if not pressed:
+		return -1.0
+	var t := press_time
+	if mode == Mode.SPELL:
+		if t < spell_start and t >= spell_start - early_buffer:
+			return spell_start + 0.001
+		return t
+	# Empurra pressões early para o início da janela útil
+	var first := parry_start
+	if t < first and t >= first - early_buffer:
+		return first + 0.001
+	return t
+
+
 func evaluate() -> Result:
 	if not pressed:
 		return Result.MISS
-	var t := press_time
+	var t := _buffered_time()
 	if mode == Mode.SPELL:
 		if chosen_action == &"counterspell" or chosen_action == &"auto":
 			if t >= spell_start and t <= spell_end:

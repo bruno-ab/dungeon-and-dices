@@ -1,0 +1,192 @@
+[gd_scene load_steps=5 format=3 uid="uid://bdungeon001"]
+
+[ext_resource type="Script" path="res://scripts/exploration/dungeon_controller.gd" id="1_dungeon"]
+[ext_resource type="Script" path="res://scripts/exploration/player_controller.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/exploration/npc_interact.gd" id="3_npc"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="4_dlg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_npc"]
+size = Vector2(72, 72)
+
+[node name="Dungeon" type="Node2D"]
+script = ExtResource("1_dungeon")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Ground" type="ColorRect" parent="World"]
+offset_left = -80.0
+offset_top = -80.0
+offset_right = 900.0
+offset_bottom = 1100.0
+color = Color(0.08, 0.07, 0.09, 1)
+
+[node name="Hall" type="ColorRect" parent="World"]
+offset_left = 280.0
+offset_top = 80.0
+offset_right = 520.0
+offset_bottom = 980.0
+color = Color(0.14, 0.12, 0.15, 1)
+
+[node name="BossRoom" type="ColorRect" parent="World"]
+offset_left = 180.0
+offset_top = 80.0
+offset_right = 620.0
+offset_bottom = 320.0
+color = Color(0.18, 0.1, 0.12, 1)
+
+[node name="MidRoom" type="ColorRect" parent="World"]
+offset_left = 200.0
+offset_top = 420.0
+offset_right = 600.0
+offset_bottom = 620.0
+color = Color(0.15, 0.13, 0.16, 1)
+
+[node name="Title" type="Label" parent="World"]
+offset_left = 220.0
+offset_top = 20.0
+offset_right = 580.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.85, 0.7, 0.55, 1)
+text = "Cripta dos Metais"
+horizontal_alignment = 1
+
+[node name="Spawns" type="Node2D" parent="World"]
+
+[node name="SpawnEntrance" type="Marker2D" parent="World/Spawns"]
+position = Vector2(400, 900)
+
+[node name="SpawnMid" type="Marker2D" parent="World/Spawns"]
+position = Vector2(400, 520)
+
+[node name="SpawnBoss" type="Marker2D" parent="World/Spawns"]
+position = Vector2(400, 280)
+
+[node name="Player" type="CharacterBody2D" parent="World" groups=["player"]]
+unique_name_in_owner = true
+position = Vector2(400, 900)
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("2_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="World/Player"]
+
+[node name="Prompt" type="Label" parent="World/Player"]
+offset_left = -60.0
+offset_top = -48.0
+offset_right = 60.0
+offset_bottom = -28.0
+theme_override_font_sizes/font_size = 12
+text = "E"
+horizontal_alignment = 1
+
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+position_smoothing_enabled = true
+
+[node name="Interactables" type="Node2D" parent="World"]
+
+[node name="Exit" type="Area2D" parent="World/Interactables"]
+position = Vector2(400, 980)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+prompt_text = "E — Voltar à Vila"
+mode = "exit_dungeon"
+speaker_name = "Saída"
+
+[node name="Sprite" type="Polygon2D" parent="World/Interactables/Exit"]
+color = Color(0.3, 0.45, 0.35, 1)
+polygon = PackedVector2Array(-24, -16, 24, -16, 24, 16, -24, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Interactables/Exit"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="MidFight" type="Area2D" parent="World/Interactables"]
+position = Vector2(400, 520)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+prompt_text = "E — Enfrentar Autômato"
+mode = "battle"
+speaker_name = "Ante-sala"
+encounter_id = "cripta"
+
+[node name="Sprite" type="Polygon2D" parent="World/Interactables/MidFight"]
+color = Color(0.5, 0.4, 0.3, 1)
+polygon = PackedVector2Array(-20, -22, 20, -22, 20, 22, -20, 22)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Interactables/MidFight"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="BossGate" type="Area2D" parent="World/Interactables"]
+position = Vector2(400, 180)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_npc")
+prompt_text = "E — Câmara do Golem"
+mode = "battle"
+speaker_name = "Boss"
+encounter_id = "cemiterio"
+
+[node name="Sprite" type="Polygon2D" parent="World/Interactables/BossGate"]
+color = Color(0.55, 0.2, 0.25, 1)
+polygon = PackedVector2Array(-28, -28, 28, -28, 28, 28, -28, 28)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/Interactables/BossGate"]
+shape = SubResource("RectangleShape2D_npc")
+
+[node name="HintMid" type="Label" parent="World"]
+offset_left = 250.0
+offset_top = 430.0
+offset_right = 550.0
+offset_bottom = 460.0
+theme_override_font_sizes/font_size = 14
+text = "Ante-sala"
+horizontal_alignment = 1
+
+[node name="HintBoss" type="Label" parent="World"]
+offset_left = 250.0
+offset_top = 90.0
+offset_right = 550.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 14
+text = "Câmara do Golem"
+horizontal_alignment = 1
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Label" parent="UI"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 700.0
+offset_bottom = 70.0
+theme_override_font_sizes/font_size = 14
+text = "HUD"
+
+[node name="Quest" type="Label" parent="UI"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 72.0
+offset_right = 700.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(0.9, 0.8, 0.55, 1)
+theme_override_font_sizes/font_size = 14
+text = "Quest"
+
+[node name="Toast" type="Label" parent="UI"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 640.0
+offset_right = 900.0
+offset_bottom = 700.0
+theme_override_font_sizes/font_size = 15
+text = ""
+
+[node name="DialogueBox" parent="UI" instance=ExtResource("4_dlg")]

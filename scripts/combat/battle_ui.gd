@@ -46,6 +46,7 @@ func _ready() -> void:
 	battle.timeline_changed.connect(_on_timeline)
 	battle.skill_preview.connect(_on_skill_preview)
 	battle.env_changed.connect(_on_env)
+	battle.telegraph_started.connect(_on_telegraph)
 	battle.turn_index_changed.connect(func(n: int): env_l.text = _env_text(battle.env_dice, n))
 
 	btn_attack.pressed.connect(func():
@@ -76,8 +77,21 @@ func _ready() -> void:
 	btn_flee.pressed.connect(_flee)
 	btn_return.pressed.connect(func():
 		AudioManager.sfx_ui_confirm()
-		SceneRouter.go_hub()
+		SceneRouter.go_exploration()
 	)
+
+	# Forma druida — botão dinâmico
+	var form_btn := Button.new()
+	form_btn.name = "FormBtn"
+	form_btn.text = "Forma"
+	form_btn.tooltip_text = "Cicla forma da druida (humano/urso/pantera)"
+	form_btn.pressed.connect(func():
+		AudioManager.sfx_ui_confirm()
+		battle.player_cycle_form()
+	)
+	btn_item.get_parent().add_child(form_btn)
+	form_btn.disabled = true
+	set_meta("form_btn", form_btn)
 
 	_set_actions(false)
 	battle.setup_encounter(GameState.pending_encounter)
@@ -159,12 +173,31 @@ func _set_actions(enabled: bool) -> void:
 	btn_magic.disabled = not enabled
 	btn_item.disabled = not enabled
 	btn_flee.disabled = not enabled
-	# reações ficam ativas só na janela; botões de turno também usam Guard
 	btn_guard.disabled = false
 	btn_dodge.disabled = false
 	btn_counter.disabled = false
 	btn_cspell.disabled = false
+	if has_meta("form_btn"):
+		var fb: Button = get_meta("form_btn")
+		var can_form: bool = enabled and battle.current != null and battle.current.class_id == &"druid"
+		fb.disabled = not can_form
 	_rebuild_targets()
+
+
+func _on_telegraph(kind: StringName, attacker_name: String) -> void:
+	reaction_hint.visible = true
+	reaction_bar.visible = true
+	reaction_bar.value = 0
+	AudioManager.play_sfx("Skill1", 0.85, -6.0)
+	if kind == &"spell":
+		reaction_hint.text = "⚠ %s conjura… prepare Contra-feitiço (U)!" % attacker_name
+		reaction_hint.modulate = Color(0.7, 0.55, 1.0)
+	else:
+		reaction_hint.text = "⚠ %s avança… prepare Guard/Esquiva/Contra (G/H/J)!" % attacker_name
+		reaction_hint.modulate = Color(1.0, 0.75, 0.4)
+	var tw := create_tween()
+	tw.tween_property(reaction_hint, "modulate:a", 0.55, 0.2)
+	tw.tween_property(reaction_hint, "modulate:a", 1.0, 0.2)
 
 
 func _rebuild_targets() -> void:
@@ -315,11 +348,12 @@ func _make_party_card(c: Combatant) -> PanelContainer:
 func _on_reaction_started(window: ReactionWindow) -> void:
 	reaction_bar.visible = true
 	reaction_hint.visible = true
+	reaction_hint.modulate = Color.WHITE
 	AudioManager.play_sfx("Skill1", 1.1, -4.0)
 	if window.mode == ReactionWindow.Mode.SPELL:
-		reaction_hint.text = "FEITIÇO INIMIGO! Contra-feitiço (U / botão) na janela d4"
+		reaction_hint.text = "AGORA! Contra-feitiço (U / botão) na janela"
 	else:
-		reaction_hint.text = "GOLPE! Guardar (G) · Esquivar (H) · Contra-atacar (J) — ou ESPAÇO"
+		reaction_hint.text = "AGORA! Guardar (G) · Esquivar (H) · Contra-atacar (J) — ou ESPAÇO"
 	reaction_bar.value = 0
 
 
@@ -351,4 +385,5 @@ func _flee() -> void:
 	AudioManager.sfx_flee()
 	GameState.last_battle_result = "flee"
 	GameState.current_hp = maxi(1, GameState.current_hp - 3)
-	SceneRouter.go_hub()
+	GameState.save_game()
+	SceneRouter.go_exploration()
