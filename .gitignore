@@ -3,6 +3,7 @@
 *.translation
 export_presets.cfg
 *.tmp
+assets/_mana_tmp/
 
 # Local engine binaries (do not commit)
 Godot_v*.exe

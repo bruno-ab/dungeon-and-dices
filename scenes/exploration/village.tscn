@@ -222,9 +222,11 @@ dialogue_id = "mira"
 speaker_name = "Mira"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="World/NPCs/Mira"]
-scale = Vector2(1.7, 1.7)
+scale = Vector2(2.1, 2.1)
+offset = Vector2(0, -8)
 script = ExtResource("5_sprite")
 catalog_id = "mira"
+animation_name = &"walk"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/NPCs/Mira"]
 shape = SubResource("RectangleShape2D_npc")

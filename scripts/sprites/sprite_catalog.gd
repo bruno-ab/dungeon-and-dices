@@ -55,10 +55,31 @@ static func magus() -> SpriteFrames:
 
 
 static func mira() -> SpriteFrames:
+	## Overworld druida (Mana Seed → mira/frames/), mesmo padrão do Magus.
+	const M := "res://assets/sprites/mira/frames"
+	var sf := SpriteFrames.new()
+	_add_anim(sf, &"idle", 1.0, ["%s/front/00.png" % M])
+	_add_anim(sf, &"idle_front", 1.0, ["%s/front/00.png" % M])
+	_add_anim(sf, &"idle_back", 1.0, ["%s/back/00.png" % M])
+	_add_anim(sf, &"idle_left", 1.0, ["%s/left/00.png" % M])
+	_add_anim(sf, &"idle_right", 1.0, ["%s/right/00.png" % M])
+	_add_anim(sf, &"walk_front", 6.0, _seq("%s/front" % M, 5))
+	_add_anim(sf, &"walk_back", 6.0, _seq("%s/back" % M, 5))
+	_add_anim(sf, &"walk_left", 6.0, _seq("%s/left" % M, 5))
+	_add_anim(sf, &"walk_right", 6.0, _seq("%s/right" % M, 5))
+	_add_anim(sf, &"walk", 6.0, _seq("%s/front" % M, 5))
+	return sf
+
+
+static func rune_frog() -> SpriteFrames:
 	var sf := SpriteFrames.new()
 	_add_anim(sf, &"idle", 3.0, [
-		"res://assets/sprites/mira/mira_00.png",
-		"res://assets/sprites/mira/mira_01.png",
+		"res://assets/sprites/enemies/rune_frog/rune_frog_00.png",
+		"res://assets/sprites/enemies/rune_frog/rune_frog_01.png",
+	])
+	_add_anim(sf, &"battle", 3.0, [
+		"res://assets/sprites/enemies/rune_frog/rune_frog_00.png",
+		"res://assets/sprites/enemies/rune_frog/rune_frog_01.png",
 	])
 	return sf
 
@@ -148,6 +169,8 @@ static func frames_for(key: String) -> SpriteFrames:
 			return golem_corrupt()
 		"trolling":
 			return trolling()
+		"rune_frog":
+			return rune_frog()
 		"campfire":
 			return campfire()
 		_:
@@ -199,6 +222,19 @@ static func _seq(folder: String, count: int) -> Array:
 	return paths
 
 
+static func _texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var loaded := load(path)
+		if loaded is Texture2D:
+			return loaded as Texture2D
+	var abs_path := ProjectSettings.globalize_path(path) if path.begins_with("res://") else path
+	if FileAccess.file_exists(abs_path):
+		var img := Image.load_from_file(abs_path)
+		if img != null and not img.is_empty():
+			return ImageTexture.create_from_image(img)
+	return null
+
+
 static func _add_anim(sf: SpriteFrames, anim: StringName, fps: float, paths: Array) -> void:
 	if sf.has_animation(anim):
 		sf.remove_animation(anim)
@@ -206,7 +242,6 @@ static func _add_anim(sf: SpriteFrames, anim: StringName, fps: float, paths: Arr
 	sf.set_animation_speed(anim, fps)
 	sf.set_animation_loop(anim, true)
 	for path in paths:
-		if ResourceLoader.exists(path):
-			var tex: Texture2D = load(path)
-			if tex:
-				sf.add_frame(anim, tex)
+		var tex := _texture(str(path))
+		if tex:
+			sf.add_frame(anim, tex)

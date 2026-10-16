@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" uid="uid://b8ottobattle01" path="res://assets/sprites/battlers/otto/otto_battle.png" id="1_otto"]
+[ext_resource type="Texture2D" uid="uid://b8lyrabattle01" path="res://assets/sprites/battlers/lyra/lyra_battle.png" id="2_mira"]
+[ext_resource type="Texture2D" uid="uid://b8kelvinbattle01" path="res://assets/sprites/battlers/kelvin/kelvin_battle.png" id="3_magus"]
+[ext_resource type="Script" path="res://scripts/sprites/catalog_sprite.gd" id="4_cat"]
+
+[node name="CharacterSprites" type="Node2D"]
+
+[node name="Party" type="Node2D" parent="."]
+
+[node name="Otto" type="Sprite2D" parent="Party"]
+position = Vector2(120, 220)
+texture = ExtResource("1_otto")
+
+[node name="MiraBattle" type="Sprite2D" parent="Party"]
+position = Vector2(320, 220)
+texture = ExtResource("2_mira")
+
+[node name="Magus" type="Sprite2D" parent="Party"]
+position = Vector2(520, 220)
+texture = ExtResource("3_magus")
+
+[node name="RuneFrog" type="AnimatedSprite2D" parent="Party"]
+position = Vector2(760, 220)
+scale = Vector2(0.35, 0.35)
+script = ExtResource("4_cat")
+catalog_id = "rune_frog"
+
+[node name="MiraWalk" type="AnimatedSprite2D" parent="Party"]
+position = Vector2(320, 420)
+scale = Vector2(2.5, 2.5)
+script = ExtResource("4_cat")
+catalog_id = "mira"
+animation_name = &"walk"
+
+[node name="Labels" type="Node2D" parent="."]
+
+[node name="OttoLabel" type="Label" parent="Labels"]
+offset_left = 60.0
+offset_top = 300.0
+offset_right = 180.0
+offset_bottom = 330.0
+text = "Otto"
+horizontal_alignment = 1
+
+[node name="MiraLabel" type="Label" parent="Labels"]
+offset_left = 260.0
+offset_top = 300.0
+offset_right = 380.0
+offset_bottom = 330.0
+text = "Mira (battler)"
+horizontal_alignment = 1
+
+[node name="MagusLabel" type="Label" parent="Labels"]
+offset_left = 460.0
+offset_top = 300.0
+offset_right = 580.0
+offset_bottom = 330.0
+text = "Magus"
+horizontal_alignment = 1
+
+[node name="FrogLabel" type="Label" parent="Labels"]
+offset_left = 700.0
+offset_top = 300.0
+offset_right = 860.0
+offset_bottom = 330.0
+text = "Sapo (pack)"
+horizontal_alignment = 1
+
+[node name="WalkLabel" type="Label" parent="Labels"]
+offset_left = 250.0
+offset_top = 480.0
+offset_right = 420.0
+offset_bottom = 510.0
+text = "Mira walk (Mana Seed)"
+horizontal_alignment = 1

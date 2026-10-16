@@ -237,7 +237,7 @@ func _build_stage() -> void:
 			sprite.play(&"idle")
 		sprite.centered = true
 		var scale_v := 0.85
-		if c.sprite_key in ["serpent_green", "serpent_purple", "golem_corrupt", "trolling"]:
+		if c.sprite_key in ["serpent_green", "serpent_purple", "golem_corrupt", "trolling", "rune_frog"]:
 			scale_v = 0.55
 		elif c.sprite_key in ["otto", "lyra", "kelvin"]:
 			scale_v = 0.95

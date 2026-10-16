@@ -62,8 +62,15 @@ static func build_enemies(id: String) -> Array[Combatant]:
 			s2.skill_name = "Investida"
 			s2.armor_class = 12
 			s2.attack_bonus = 3
+			var frog := Combatant.new(&"rune_frog", "Sapo Rúnico", false, 20, 11, 1, 6, 1, Color(0.55, 0.45, 0.25))
+			frog.sprite_key = "rune_frog"
+			frog.attack_kind = &"melee"
+			frog.skill_name = "Salto Rúnico"
+			frog.armor_class = 11
+			frog.attack_bonus = 2
 			out.append(s1)
 			out.append(s2)
+			out.append(frog)
 		"trilha":
 			var slime := Combatant.new(&"slime", "Lodo Sombrio", false, 24, 7, 1, 6, 0, Color(0.35, 0.7, 0.4))
 			slime.sprite_key = "slime"
